@@ -5,119 +5,392 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Toggles {
 
+    boolean isOnOffButtonPressed;
+    boolean onOffFlag;
+
+    boolean isMultiNumericTogglePressed;
+    int multiNumericCounter;
+
     ElapsedTime onOffTimer = new ElapsedTime();
 
     public Toggles () {
 
     }
 
-    // TODO: create a return statement for the testFlag variable
-    public void onOffToggle (Boolean testFlag, int delay, char buttonPressed, Gamepad gamepad) {
+    public boolean onOffToggle (char buttonPressed, Gamepad gamepad) {
 
         if (buttonPressed == 'A') {
 
-            if (gamepad.a && testFlag == true && onOffTimer.milliseconds() >= delay) {
-                testFlag = false;
-                onOffTimer.reset();
-            } else if (gamepad.a && testFlag == false && onOffTimer.milliseconds() >= delay) {
-                testFlag = true;
-                onOffTimer.reset();
+            if (gamepad.a) {
+
+                isOnOffButtonPressed = true;
+
+            } else if (!gamepad.a && isOnOffButtonPressed == true) {
+
+                isOnOffButtonPressed = false;
+
+                if (onOffFlag == false) {
+                    onOffFlag = true;
+                } else {
+                    onOffFlag = false;
+                }
+
             }
 
         } else if (buttonPressed == 'B') {
 
-            if (gamepad.b && testFlag == true && onOffTimer.milliseconds() >= delay) {
-                testFlag = false;
-                onOffTimer.reset();
-            } else if (gamepad.b && testFlag == false && onOffTimer.milliseconds() >= delay) {
-                testFlag = true;
-                onOffTimer.reset();
+            if (gamepad.b) {
+
+                isOnOffButtonPressed = true;
+
+            } else if (!gamepad.b && isOnOffButtonPressed == true) {
+
+                isOnOffButtonPressed = false;
+
+                if (onOffFlag == false) {
+                    onOffFlag = true;
+                } else {
+                    onOffFlag = false;
+                }
+
             }
 
         } else if (buttonPressed == 'X') {
 
-            if (gamepad.x && testFlag == true && onOffTimer.milliseconds() >= delay) {
-                testFlag = false;
-                onOffTimer.reset();
-            } else if (gamepad.x && testFlag == false && onOffTimer.milliseconds() >= delay) {
-                testFlag = true;
-                onOffTimer.reset();
+            if (gamepad.x) {
+
+                isOnOffButtonPressed = true;
+
+            } else if (!gamepad.x && isOnOffButtonPressed == true) {
+
+                isOnOffButtonPressed = false;
+
+                if (onOffFlag == false) {
+                    onOffFlag = true;
+                } else {
+                    onOffFlag = false;
+                }
+
             }
 
         } else if (buttonPressed == 'Y') {
 
-            if (gamepad.y && testFlag == true && onOffTimer.milliseconds() >= delay) {
-                testFlag = false;
-                onOffTimer.reset();
-            } else if (gamepad.y && testFlag == false && onOffTimer.milliseconds() >= delay) {
-                testFlag = true;
-                onOffTimer.reset();
+            if (gamepad.y) {
+
+                isOnOffButtonPressed = true;
+
+            } else if (!gamepad.y && isOnOffButtonPressed == true) {
+
+                isOnOffButtonPressed = false;
+
+                if (onOffFlag == false) {
+                    onOffFlag = true;
+                } else {
+                    onOffFlag = false;
+                }
+
             }
 
         } else if (buttonPressed == 'U') {
 
-            if (gamepad.dpad_up && testFlag == true && onOffTimer.milliseconds() >= delay) {
-                testFlag = false;
-                onOffTimer.reset();
-            } else if (gamepad.dpad_up && testFlag == false && onOffTimer.milliseconds() >= delay) {
-                testFlag = true;
-                onOffTimer.reset();
+            if (gamepad.dpad_up) {
+
+                isOnOffButtonPressed = true;
+
+            } else if (!gamepad.dpad_up && isOnOffButtonPressed == true) {
+
+                isOnOffButtonPressed = false;
+
+                if (onOffFlag == false) {
+                    onOffFlag = true;
+                } else {
+                    onOffFlag = false;
+                }
+
             }
 
         } else if (buttonPressed == 'D') {
 
-            if (gamepad.dpad_down && testFlag == true && onOffTimer.milliseconds() >= delay) {
-                testFlag = false;
-                onOffTimer.reset();
-            } else if (gamepad.dpad_down && testFlag == false && onOffTimer.milliseconds() >= delay) {
-                testFlag = true;
-                onOffTimer.reset();
+            if (gamepad.dpad_down) {
+
+                isOnOffButtonPressed = true;
+
+            } else if (!gamepad.dpad_down && isOnOffButtonPressed == true) {
+
+                isOnOffButtonPressed = false;
+
+                if (onOffFlag == false) {
+                    onOffFlag = true;
+                } else {
+                    onOffFlag = false;
+                }
+
             }
 
         } else if (buttonPressed == 'L') {
 
-            if (gamepad.dpad_left && testFlag == true && onOffTimer.milliseconds() >= delay) {
-                testFlag = false;
-                onOffTimer.reset();
-            } else if (gamepad.dpad_left && testFlag == false && onOffTimer.milliseconds() >= delay) {
-                testFlag = true;
-                onOffTimer.reset();
+            if (gamepad.dpad_left) {
+
+                isOnOffButtonPressed = true;
+
+            } else if (!gamepad.dpad_left && isOnOffButtonPressed == true) {
+
+                isOnOffButtonPressed = false;
+
+                if (onOffFlag == false) {
+                    onOffFlag = true;
+                } else {
+                    onOffFlag = false;
+                }
+
             }
 
         } else if (buttonPressed == 'R') {
 
-            if (gamepad.dpad_right && testFlag == true && onOffTimer.milliseconds() >= delay) {
-                testFlag = false;
-                onOffTimer.reset();
-            } else if (gamepad.dpad_right && testFlag == false && onOffTimer.milliseconds() >= delay) {
-                testFlag = true;
-                onOffTimer.reset();
+            if (gamepad.dpad_right) {
+
+                isOnOffButtonPressed = true;
+
+            } else if (!gamepad.dpad_right && isOnOffButtonPressed == true) {
+
+                isOnOffButtonPressed = false;
+
+                if (onOffFlag == false) {
+                    onOffFlag = true;
+                } else {
+                    onOffFlag = false;
+                }
+
             }
 
         } else if (buttonPressed == 'M') {
 
-            if (gamepad.left_bumper && testFlag == true && onOffTimer.milliseconds() >= delay) {
-                testFlag = false;
-                onOffTimer.reset();
-            } else if (gamepad.left_bumper && testFlag == false && onOffTimer.milliseconds() >= delay) {
-                testFlag = true;
-                onOffTimer.reset();
+            if (gamepad.left_bumper) {
+
+                isOnOffButtonPressed = true;
+
+            } else if (!gamepad.left_bumper && isOnOffButtonPressed == true) {
+
+                isOnOffButtonPressed = false;
+
+                if (onOffFlag == false) {
+                    onOffFlag = true;
+                } else {
+                    onOffFlag = false;
+                }
+
             }
 
         } else if (buttonPressed == 'P') {
 
-            if (gamepad.right_bumper && testFlag == true && onOffTimer.milliseconds() >= delay) {
-                testFlag = false;
-                onOffTimer.reset();
-            } else if (gamepad.right_bumper && testFlag == false && onOffTimer.milliseconds() >= delay) {
-                testFlag = true;
-                onOffTimer.reset();
+            if (gamepad.right_bumper) {
+
+                isOnOffButtonPressed = true;
+
+            } else if (!gamepad.right_bumper && isOnOffButtonPressed == true) {
+
+                isOnOffButtonPressed = false;
+
+                if (onOffFlag == false) {
+                    onOffFlag = true;
+                } else {
+                    onOffFlag = false;
+                }
+
             }
 
         }
 
+        return onOffFlag;
+
     }
 
-    public void counter () {}
+    public int multiNumericToggle (int minumumValue, int maximumValue, char buttonPressed, Gamepad gamepad) {
+
+        if (buttonPressed == 'A') {
+
+            if (gamepad.a) {
+                isMultiNumericTogglePressed = true;
+            } else if (!gamepad.a && isMultiNumericTogglePressed == true) {
+
+                isMultiNumericTogglePressed = false;
+
+                if (multiNumericCounter >= maximumValue) {
+
+                    multiNumericCounter = minumumValue;
+
+                }
+
+                multiNumericCounter++;
+
+            }
+
+        } else if (buttonPressed == 'B') {
+
+            if (gamepad.b) {
+                isMultiNumericTogglePressed = true;
+            } else if (!gamepad.b && isMultiNumericTogglePressed == true) {
+
+                isMultiNumericTogglePressed = false;
+
+                if (multiNumericCounter >= maximumValue) {
+
+                    multiNumericCounter = minumumValue;
+
+                }
+
+                multiNumericCounter++;
+
+            }
+
+        } else if (buttonPressed == 'X') {
+
+            if (gamepad.x) {
+                isMultiNumericTogglePressed = true;
+            } else if (!gamepad.x && isMultiNumericTogglePressed == true) {
+
+                isMultiNumericTogglePressed = false;
+
+                if (multiNumericCounter >= maximumValue) {
+
+                    multiNumericCounter = minumumValue;
+
+                }
+
+                multiNumericCounter++;
+
+            }
+
+        } else if (buttonPressed == 'Y') {
+
+            if (gamepad.y) {
+                isMultiNumericTogglePressed = true;
+            } else if (!gamepad.y && isMultiNumericTogglePressed == true) {
+
+                isMultiNumericTogglePressed = false;
+
+                if (multiNumericCounter >= maximumValue) {
+
+                    multiNumericCounter = minumumValue;
+
+                }
+
+                multiNumericCounter++;
+
+            }
+
+        } else if (buttonPressed == 'U') {
+
+            if (gamepad.dpad_up) {
+                isMultiNumericTogglePressed = true;
+            } else if (!gamepad.dpad_up && isMultiNumericTogglePressed == true) {
+
+                isMultiNumericTogglePressed = false;
+
+                if (multiNumericCounter >= maximumValue) {
+
+                    multiNumericCounter = minumumValue;
+
+                }
+
+                multiNumericCounter++;
+
+            }
+
+        } else if (buttonPressed == 'D') {
+
+            if (gamepad.dpad_down) {
+                isMultiNumericTogglePressed = true;
+            } else if (!gamepad.dpad_down && isMultiNumericTogglePressed == true) {
+
+                isMultiNumericTogglePressed = false;
+
+                if (multiNumericCounter >= maximumValue) {
+
+                    multiNumericCounter = minumumValue;
+
+                }
+
+                multiNumericCounter++;
+
+            }
+
+        } else if (buttonPressed == 'L') {
+
+            if (gamepad.dpad_left) {
+                isMultiNumericTogglePressed = true;
+            } else if (!gamepad.dpad_left && isMultiNumericTogglePressed == true) {
+
+                isMultiNumericTogglePressed = false;
+
+                if (multiNumericCounter >= maximumValue) {
+
+                    multiNumericCounter = minumumValue;
+
+                }
+
+                multiNumericCounter++;
+
+            }
+
+        } else if (buttonPressed == 'R') {
+
+            if (gamepad.dpad_right) {
+                isMultiNumericTogglePressed = true;
+            } else if (!gamepad.dpad_right && isMultiNumericTogglePressed == true) {
+
+                isMultiNumericTogglePressed = false;
+
+                if (multiNumericCounter >= maximumValue) {
+
+                    multiNumericCounter = minumumValue;
+
+                }
+
+                multiNumericCounter++;
+
+            }
+
+        } else if (buttonPressed == 'M') {
+
+            if (gamepad.left_bumper) {
+                isMultiNumericTogglePressed = true;
+            } else if (!gamepad.left_bumper && isMultiNumericTogglePressed == true) {
+
+                isMultiNumericTogglePressed = false;
+
+                if (multiNumericCounter >= maximumValue) {
+
+                    multiNumericCounter = minumumValue;
+
+                }
+
+                multiNumericCounter++;
+
+            }
+
+        } else if (buttonPressed == 'P') {
+
+            if (gamepad.right_bumper) {
+                isMultiNumericTogglePressed = true;
+            } else if (!gamepad.right_bumper && isMultiNumericTogglePressed == true) {
+
+                isMultiNumericTogglePressed = false;
+
+                if (multiNumericCounter >= maximumValue) {
+
+                    multiNumericCounter = minumumValue;
+
+                }
+
+                multiNumericCounter++;
+
+            }
+
+        }
+
+        return multiNumericCounter;
+
+    }
 
 }

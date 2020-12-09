@@ -17,13 +17,15 @@ public class DriveTrain {
     Toggles toggles = new Toggles();
 
     public DriveTrain (Gamepad gamepad1, DcMotor lF, DcMotor rF, DcMotor lB, DcMotor rB) {
+        gamepad1 = this.gamepad1;
+
         leftFront = lF;
         rightFront = rF;
         leftBack = lB;
         rightBack = rB;
     }
 
-    public void DriveTrainControl () {
+    public void driveTrainControl () {
         leftFront.setPower((-gamepad1.left_stick_y + gamepad1.right_stick_x + gamepad1.left_stick_x) / driveSpeedLimiter);
         rightFront.setPower((-gamepad1.left_stick_y - gamepad1.right_stick_x -gamepad1.left_stick_x) / driveSpeedLimiter);
         leftBack.setPower((-gamepad1.left_stick_y + gamepad1.right_stick_x - gamepad1.left_stick_x) / driveSpeedLimiter);

@@ -215,7 +215,7 @@ public class Toggles {
 
                 isMultiNumericTogglePressed = false;
 
-                if (multiNumericCounter >= maximumValue) {
+                if (multiNumericCounter > maximumValue) {
 
                     multiNumericCounter = minumumValue;
 
@@ -233,7 +233,7 @@ public class Toggles {
 
                 isMultiNumericTogglePressed = false;
 
-                if (multiNumericCounter >= maximumValue) {
+                if (multiNumericCounter > maximumValue) {
 
                     multiNumericCounter = minumumValue;
 
@@ -251,7 +251,7 @@ public class Toggles {
 
                 isMultiNumericTogglePressed = false;
 
-                if (multiNumericCounter >= maximumValue) {
+                if (multiNumericCounter > maximumValue) {
 
                     multiNumericCounter = minumumValue;
 
@@ -269,7 +269,7 @@ public class Toggles {
 
                 isMultiNumericTogglePressed = false;
 
-                if (multiNumericCounter >= maximumValue) {
+                if (multiNumericCounter > maximumValue) {
 
                     multiNumericCounter = minumumValue;
 
@@ -287,7 +287,7 @@ public class Toggles {
 
                 isMultiNumericTogglePressed = false;
 
-                if (multiNumericCounter >= maximumValue) {
+                if (multiNumericCounter > maximumValue) {
 
                     multiNumericCounter = minumumValue;
 
@@ -305,7 +305,7 @@ public class Toggles {
 
                 isMultiNumericTogglePressed = false;
 
-                if (multiNumericCounter >= maximumValue) {
+                if (multiNumericCounter > maximumValue) {
 
                     multiNumericCounter = minumumValue;
 
@@ -323,7 +323,7 @@ public class Toggles {
 
                 isMultiNumericTogglePressed = false;
 
-                if (multiNumericCounter >= maximumValue) {
+                if (multiNumericCounter > maximumValue) {
 
                     multiNumericCounter = minumumValue;
 
@@ -341,7 +341,7 @@ public class Toggles {
 
                 isMultiNumericTogglePressed = false;
 
-                if (multiNumericCounter >= maximumValue) {
+                if (multiNumericCounter > maximumValue) {
 
                     multiNumericCounter = minumumValue;
 
@@ -359,7 +359,7 @@ public class Toggles {
 
                 isMultiNumericTogglePressed = false;
 
-                if (multiNumericCounter >= maximumValue) {
+                if (multiNumericCounter > maximumValue) {
 
                     multiNumericCounter = minumumValue;
 
@@ -377,7 +377,7 @@ public class Toggles {
 
                 isMultiNumericTogglePressed = false;
 
-                if (multiNumericCounter >= maximumValue) {
+                if (multiNumericCounter > maximumValue) {
 
                     multiNumericCounter = minumumValue;
 

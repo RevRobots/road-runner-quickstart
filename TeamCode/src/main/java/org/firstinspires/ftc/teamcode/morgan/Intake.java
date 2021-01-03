@@ -6,16 +6,13 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 public class Intake {
 
-    Gamepad gamepad1;
-
     DcMotor intake;
 
     CRServo intakeWheels;
 
     int intakeControl = 1;
 
-    public Intake (Gamepad g1, DcMotor i, CRServo iW) {
-        gamepad1 = g1;
+    public Intake (DcMotor i, CRServo iW) {
 
         intake = i;
         i.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -23,7 +20,7 @@ public class Intake {
         intakeWheels = iW;
     }
 
-    public void intakeControl () {
+    public void intakeControl (Gamepad gamepad1) {
 
         if (gamepad1.dpad_up) {
             intakeControl = 1;
@@ -40,18 +37,27 @@ public class Intake {
             } else if (gamepad1.left_trigger != 0) {
                 intake.setPower(-gamepad1.left_trigger);
                 intakeWheels.setPower(-gamepad1.left_trigger);
+            } else {
+                intake.setPower(0);
+                intakeWheels.setPower(0);
             }
         } else if (intakeControl == 2) {
             if (gamepad1.right_trigger != 0) {
                 intake.setPower(gamepad1.right_trigger);
             } else if (gamepad1.left_trigger != 0) {
                 intake.setPower(-gamepad1.left_trigger);
+            } else {
+                intake.setPower(0);
+                intakeWheels.setPower(0);
             }
         } else if (intakeControl == 3) {
             if (gamepad1.right_trigger != 0) {
                 intakeWheels.setPower(gamepad1.right_trigger);
             } else if (gamepad1.left_trigger != 0) {
                 intakeWheels.setPower(-gamepad1.left_trigger);
+            } else {
+                intake.setPower(0);
+                intakeWheels.setPower(0);
             }
         }
 

@@ -8,8 +8,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Shooter {
 
-    Gamepad gamepad2;
-
     DcMotor rotation;
     DcMotor flywheel;
 
@@ -21,12 +19,16 @@ public class Shooter {
     boolean fireMode = false;
     boolean isTriggerPressed;
 
+    boolean isLoading = false;
+    boolean isLoadingPressed;
+
+    double zeroPowerPos = 0.5;
+
     Toggles toggles = new Toggles();
     ElapsedTime triggerTime = new ElapsedTime();
     ElapsedTime triggerDelayTime = new ElapsedTime();
 
-    public Shooter (Gamepad g2, DcMotor r, DcMotor f, Servo rP) {
-        gamepad2 = g2;
+    public Shooter (DcMotor r, DcMotor f, Servo rP) {
 
         rotation = r;
         flywheel = f;
@@ -34,13 +36,9 @@ public class Shooter {
         ringPusher = rP;
     }
 
-    public void shooterControl () {
+    public void shooterControl (Gamepad gamepad2) {
 
-        if ((rotation.getCurrentPosition() >= 500 && gamepad2.left_stick_y < 0) || (rotation.getCurrentPosition() <=0 && gamepad2.left_stick_y > 0)) {
-            rotation.setPower(0);
-        } else {
-            rotation.setPower((gamepad2.left_stick_y)/rotationLimiter);
-        }
+        rotation.setPower((gamepad2.left_stick_y)/1.25);
 
         rotationCounter = toggles.multiNumericToggle(1, 4, 'y', gamepad2);
 
@@ -63,10 +61,16 @@ public class Shooter {
         if (fireMode == false) {
             if (gamepad2.right_trigger != 0) {
                 flywheel.setPower(1);
+            } else {
+                flywheel.setPower(0);
             }
 
-            if (gamepad2.left_trigger != 0 && ringPusher.getPosition() == 0) {
-                trigger();
+            if (gamepad2.left_trigger != 0) {
+                //trigger();
+                ringPusher.setPosition(0.5);
+            } else {
+                ringPusher.setPosition(zeroPowerPos);
+                triggerTime.reset();
             }
         } else if (fireMode == true) {
 
@@ -74,7 +78,7 @@ public class Shooter {
 
                 if (isTriggerPressed == false) {
                     triggerDelayTime.reset();
-                    isTriggerPressed = true;
+                     isTriggerPressed = true;
                 }
 
                 flywheel.setPower(1);
@@ -82,7 +86,7 @@ public class Shooter {
                 if (triggerDelayTime.milliseconds() >= 250) {
 
                     if (ringPusher.getPosition() == 0) {
-                        trigger();
+                        //trigger();
                     }
 
                 }
@@ -91,9 +95,17 @@ public class Shooter {
 
         }
 
+        isLoading = toggles.onOffToggle('D', gamepad2);
+
+        if(isLoading == true) {
+            zeroPowerPos = 0.5;
+        } else if (isLoading == false) {
+            zeroPowerPos = 0;
+        }
+
     }
 
-    public void trigger () {
+    /*public void trigger () {
 
         triggerTime.reset();
 
@@ -102,6 +114,6 @@ public class Shooter {
         if (triggerTime.milliseconds() >= 1000) {
             ringPusher.setPosition(0);
         }
-    }
+    }*/
 
 }

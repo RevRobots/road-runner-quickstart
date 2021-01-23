@@ -18,11 +18,12 @@ public class Shooter {
 
     boolean fireMode = false;
     boolean isTriggerPressed;
+    boolean launched = false;
 
     boolean isLoading = false;
     boolean isLoadingPressed;
 
-    double zeroPowerPos = 0.5;
+    double zeroPowerPos = 0;
 
     Toggles toggles = new Toggles();
     ElapsedTime triggerTime = new ElapsedTime();
@@ -52,6 +53,28 @@ public class Shooter {
             rotationLimiter = 1;
         }
 
+        if (gamepad2.left_trigger != 0) {
+            flywheel.setPower(0.85);
+        } else {
+            flywheel.setPower(0);
+        }
+
+        if (gamepad2.right_trigger != 0) {
+            //trigger();
+            ringPusher.setPosition(0.5);
+        } else {
+            ringPusher.setPosition(0);
+        }
+
+        isLoading = toggles.onOffToggle('D', gamepad2);
+
+        if (isLoading == true) {
+            zeroPowerPos = 0.5;
+        } else if (isLoading == false) {
+            zeroPowerPos = 0;
+        }
+
+        /*
         fireMode = toggles.onOffToggle('B', gamepad2);
 
         if (gamepad2.right_trigger != 0) {
@@ -103,6 +126,18 @@ public class Shooter {
             zeroPowerPos = 0;
         }
 
+         */
+
+    }
+
+    public void trigger () {
+        if (ringPusher.getPosition() != 0.5 && launched == false) {
+            ringPusher.setPosition(0.5);
+            launched = true;
+        } else if (ringPusher.getPosition() == 0.5 && launched == true) {
+            ringPusher.setPosition(0);
+            launched = false;
+        }
     }
 
     /*public void trigger () {

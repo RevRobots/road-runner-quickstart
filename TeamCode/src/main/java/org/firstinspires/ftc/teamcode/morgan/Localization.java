@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.util.Encoder;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
-public class Localization {
+public class Localization implements Runnable {
 
     HardwareMap hardwareMap;
 
@@ -27,30 +27,37 @@ public class Localization {
 
     BNO055IMU imu;
     Orientation angles;
-    Acceleration gravity;
 
-    double leftPosition;
-    double rightPosition;
-    double frontPosition;
+    int leftOdometerMultiplier;
+    int rightOdometerMultiplier;
+    int frontOdometerMultiplier;
 
-    double previousX;
-    double previousY;
+    double correctedLeftOdometerValue;
+    double correctedRightOdometerValue;
+    double correctedFrontOdometerValue;
 
-    double newX;
-    double newY;
+    double previouLeftOdometerValue;
+    double previousRightOdometerValue;
+    double previousFrontOdometerValue;
 
-    double currentX;
-    double currentY;
+    double changeInRobotOreintation;
+    double robotOrientation;
 
-    double theta;
+    double globalXPosition;
+    double globalYPostion;
 
-    public Localization (HardwareMap hwMap, DcMotor lO, DcMotor rO, DcMotor fO) {
+    private boolean isRunning = true;
+    int sleepTime;
+
+    public Localization (HardwareMap hwMap, DcMotor lO, DcMotor rO, DcMotor fO, int sT) {
 
         hardwareMap = hwMap;
 
         leftOdometer = lO;
         rightOdometer = rO;
         frontOdometer = fO;
+
+        sleepTime = sT;
 
         robotConfig = new RobotConfig(hardwareMap);
 
@@ -69,30 +76,71 @@ public class Localization {
 
     }
 
-    public void localize () {
+    private void localize () {
 
-        theta = angles.firstAngle + 90;
+        correctedLeftOdometerValue = (leftOdometer.getCurrentPosition() * leftOdometerMultiplier);
+        correctedRightOdometerValue = (rightOdometer.getCurrentPosition() * rightOdometerMultiplier);
 
-        leftPosition = leftOdometer.getCurrentPosition();
-        rightPosition = rightOdometer.getCurrentPosition();
-        frontPosition = frontOdometer.getCurrentPosition();
+        double leftChange = correctedLeftOdometerValue - previouLeftOdometerValue;
+        double rightChange = correctedRightOdometerValue = previousRightOdometerValue;
 
-        double yWheels = (leftPosition + rightPosition)/2;
-        double xWheel = frontPosition;
+        changeInRobotOreintation = (leftChange - rightChange) / robotConfig.odometerTrackWidth;
+        robotOrientation = robotOrientation + changeInRobotOreintation;
 
-        newX = (yWheels * Math.cos(theta)) + (xWheel * Math.cos(theta));
-        newY = (yWheels * Math.sin(theta)) + (xWheel * Math.sin(theta));
+        correctedFrontOdometerValue = (frontOdometer.getCurrentPosition() * frontOdometerMultiplier);
+        double rawFrontChange = correctedFrontOdometerValue - previousFrontOdometerValue;
+        double frontChange = rawFrontChange - (changeInRobotOreintation * robotConfig.frontOdometerOffset);
 
-        currentX = newX + previousX;
-        currentY = newY + previousY;
+        double p = ((rightChange + leftChange) / 2);
+        double n = frontChange;
 
-        previousX = currentX;
-        previousY = currentY;
+        globalXPosition = globalXPosition + (p * Math.sin(robotOrientation)) + (n * Math.cos(robotOrientation));
+        globalYPostion = globalYPostion + (p * Math.cos(robotOrientation)) + (n * Math.sin(robotOrientation));
 
-        leftOdometer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightOdometer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontOdometer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        previouLeftOdometerValue = correctedLeftOdometerValue;
+        previousRightOdometerValue = correctedRightOdometerValue;
+        previousFrontOdometerValue = correctedFrontOdometerValue;
 
+    }
+
+    public double getGlobalXPosition () {
+        return globalXPosition;
+    }
+
+    public double getGlobalYPostion () {
+        return globalYPostion;
+    }
+
+    public double getRobotOrientation () {
+        return (Math.toDegrees(robotOrientation) % 360);
+    }
+
+    public double getCorrectedLeftOdometerValue () {
+        return correctedLeftOdometerValue;
+    }
+
+    public double getCorrectedRightOdometerValue () {
+        return correctedRightOdometerValue;
+    }
+
+    public double getCorrectedFrontOdometerValue () {
+        return correctedFrontOdometerValue;
+    }
+
+    public void stop() {
+        isRunning = false;
+    }
+
+    @Override
+    public void run() {
+        while(isRunning) {
+            localize();
+            try {
+                Thread.sleep(sleepTime);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

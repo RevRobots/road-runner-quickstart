@@ -10,26 +10,33 @@ public class RobotConfig {
 
     HardwareMap hardwareMap;
 
-    String leftFront = "leftFront";
-    String rightFront = "rightFront";
-    String leftBack = "leftBack";
-    String rightBack = "rightBack";
+    public static String leftFront = "leftFront";
+    public static String rightFront = "rightFront";
+    public static String leftBack = "leftBack";
+    public static String rightBack = "rightBack";
 
-    String leftOdometer = "leftBack";
-    String rightOdometer = "rightBack";
-    String frontOdometer = "leftFront";
+    public static String leftOdometer = "leftBack";
+    public static String rightOdometer = "rightBack";
+    public static String frontOdometer = "leftFront";
 
-    String intake = "intake";
-    String intakeWheels = "intakeWheels";
+    public static String intake = "intake";
+    public static String intakeWheels = "intakeWheels";
 
-    String rotation = "rotation";
-    String flywheel = "flywheel";
-    String ringPusher = "ringPusher";
+    public static String rotation = "rotation";
+    public static String flywheel = "flywheel";
+    public static String ringPusher = "ringPusher";
 
-    String wobbleArm = "wobbleArm";
-    String finger = "finger";
+    public static String wobbleArm = "wobbleArm";
+    public static String finger = "finger";
 
-    String imu = "imu";
+    public static String distanceSensor = "distanceSensor";
+
+    public static String imu = "imu";
+
+    public static String revBlinkin = "led";
+
+    public static double odometerTrackWidth = 14;
+    public static double frontOdometerOffset;
 
     public RobotConfig (HardwareMap hwMap) {
         hardwareMap = hwMap;

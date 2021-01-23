@@ -23,10 +23,10 @@ public class DriveTrain {
     }
 
     public void driveTrainControl (Gamepad gamepad1) {
-        leftFront.setPower((-gamepad1.left_stick_y + gamepad1.right_stick_x + (gamepad1.left_stick_x*0.75)) / driveSpeedLimiter);
-        rightFront.setPower((-gamepad1.left_stick_y - gamepad1.right_stick_x + (gamepad1.left_stick_x*0.75)) / driveSpeedLimiter);
-        leftBack.setPower((-gamepad1.left_stick_y + gamepad1.right_stick_x - (gamepad1.left_stick_x*0.75)) / driveSpeedLimiter);
-        rightBack.setPower((-gamepad1.left_stick_y - gamepad1.right_stick_x - (gamepad1.left_stick_x*0.75)) / driveSpeedLimiter);
+        leftFront.setPower((-gamepad1.left_stick_y + gamepad1.right_stick_x - (gamepad1.left_stick_x)) / driveSpeedLimiter);
+        rightFront.setPower((-gamepad1.left_stick_y - gamepad1.right_stick_x + (gamepad1.left_stick_x)) / driveSpeedLimiter);
+        leftBack.setPower((-gamepad1.left_stick_y + gamepad1.right_stick_x + (gamepad1.left_stick_x)) / driveSpeedLimiter);
+        rightBack.setPower((-gamepad1.left_stick_y - gamepad1.right_stick_x - (gamepad1.left_stick_x)) / driveSpeedLimiter);
 
         speedCounter = toggles.multiNumericToggle(1, 4, 'A', gamepad1);
 

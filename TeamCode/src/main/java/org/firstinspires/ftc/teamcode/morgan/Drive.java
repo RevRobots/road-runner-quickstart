@@ -105,8 +105,8 @@ public class Drive extends OpMode {
 
         distanceSensor = hardwareMap.get(DistanceSensor.class, robotConfig.distanceSensor);
 
-        driveTrain = new DriveTrain(leftFront, rightFront, leftBack, rightBack);
-        intakeClass = new Intake(intake, intakeWheels);
+        driveTrain = new DriveTrain(leftFront, rightFront, leftBack, rightBack, leftOdometer, rightOdometer, frontOdometer);
+        intakeClass = new Intake(intake);
         shooter = new Shooter (rotation, flywheel, ringPusher);
         wobbleArmClass = new WobbleArm(wobbleArm, finger);
 

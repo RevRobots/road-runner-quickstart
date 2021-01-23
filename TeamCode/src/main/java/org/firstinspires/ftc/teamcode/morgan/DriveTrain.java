@@ -1,11 +1,15 @@
 package org.firstinspires.ftc.teamcode.morgan;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
+
+import org.firstinspires.ftc.teamcode.util.Encoder;
 
 public class DriveTrain {
 
     DcMotor leftFront, rightFront, leftBack, rightBack;
+    DcMotor leftOdometer, rightOdometer, frontOdometer;
 
     double driveSpeedLimiter = 2;
     int speedCounter = 2;
@@ -14,12 +18,20 @@ public class DriveTrain {
 
     Toggles toggles = new Toggles();
 
-    public DriveTrain (DcMotor lF, DcMotor rF, DcMotor lB, DcMotor rB) {
+    public DriveTrain (DcMotor lF, DcMotor rF, DcMotor lB, DcMotor rB, DcMotor lO, DcMotor rO, DcMotor fO) {
 
         leftFront = lF;
         rightFront = rF;
         leftBack = lB;
         rightBack = rB;
+
+        leftOdometer = lO;
+        rightOdometer = rO;
+        frontOdometer = fO;
+
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightOdometer.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public void driveTrainControl (Gamepad gamepad1) {
@@ -55,33 +67,28 @@ public class DriveTrain {
         }
     }
 
-    public void forwards (double power, int tic) {
-        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    public void forwardsOdometry (double power, int tic) {
+        leftOdometer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightOdometer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftOdometer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightOdometer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        leftFront.setTargetPosition(tic);
-        rightFront.setTargetPosition(tic);
-        leftBack.setTargetPosition(tic);
-        rightBack.setTargetPosition(tic);
+        leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftOdometer.setTargetPosition(tic);
+        rightOdometer.setTargetPosition(-tic);
+
+        leftOdometer.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightOdometer.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         leftFront.setPower(power);
         rightFront.setPower(power);
         leftBack.setPower(power);
         rightBack.setPower(power);
 
-        while (leftFront.isBusy() && rightFront.isBusy() && leftBack.isBusy() && rightBack.isBusy() );
+        while (leftOdometer.isBusy() && rightOdometer.isBusy());
 
         leftFront.setPower(0);
         rightFront.setPower(0);
@@ -89,33 +96,25 @@ public class DriveTrain {
         rightBack.setPower(0);
     }
 
-    public void backwards (double power, int tic) {
-        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    public void backwardsOdometery (double power, int tic) {
+        leftOdometer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightOdometer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftOdometer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightOdometer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        leftFront.setTargetPosition(-tic);
-        rightFront.setTargetPosition(-tic);
-        leftBack.setTargetPosition(-tic);
-        rightBack.setTargetPosition(-tic);
+        leftOdometer.setTargetPosition(-tic);
+        rightOdometer.setTargetPosition(-tic);
 
-        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftOdometer.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightOdometer.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        leftFront.setPower(power);
-        rightFront.setPower(power);
+        leftFront.setPower(-power);
+        rightFront.setPower(-power);
         leftBack.setPower(power);
         rightBack.setPower(power);
 
-        while (leftFront.isBusy() && rightFront.isBusy() && leftBack.isBusy() && rightBack.isBusy() );
+        while (leftOdometer.isBusy() && rightOdometer.isBusy());
 
         leftFront.setPower(0);
         rightFront.setPower(0);
@@ -123,33 +122,21 @@ public class DriveTrain {
         rightBack.setPower(0);
     }
 
-    public void strafeRight (double power, int tic) {
-        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    public void rightOdometery (double power, int tic) {
+        frontOdometer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontOdometer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        leftFront.setTargetPosition(tic);
-        rightFront.setTargetPosition(tic);
-        leftBack.setTargetPosition(-tic);
-        rightBack.setTargetPosition(-tic);
+        frontOdometer.setTargetPosition(tic);
 
-        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontOdometer.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        leftFront.setPower(power);
+        leftFront.setPower(-power);
         rightFront.setPower(power);
         leftBack.setPower(power);
-        rightBack.setPower(power);
+        rightBack.setPower(-power);
 
-        while (leftFront.isBusy() && rightFront.isBusy() && leftBack.isBusy() && rightBack.isBusy() );
+        while (frontOdometer.isBusy());
 
         leftFront.setPower(0);
         rightFront.setPower(0);
@@ -157,33 +144,21 @@ public class DriveTrain {
         rightBack.setPower(0);
     }
 
-    public void strafeLeft (double power, int tic) {
-        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    public void leftOdometery (double power, int tic) {
+        frontOdometer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontOdometer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        leftFront.setTargetPosition(-tic);
-        rightFront.setTargetPosition(-tic);
-        leftBack.setTargetPosition(tic);
-        rightBack.setTargetPosition(tic);
+        frontOdometer.setTargetPosition(tic);
 
-        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontOdometer.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         leftFront.setPower(power);
-        rightFront.setPower(power);
-        leftBack.setPower(power);
+        rightFront.setPower(-power);
+        leftBack.setPower(-power);
         rightBack.setPower(power);
 
-        while (leftFront.isBusy() && rightFront.isBusy() && leftBack.isBusy() && rightBack.isBusy() );
+        while (frontOdometer.isBusy());
 
         leftFront.setPower(0);
         rightFront.setPower(0);
@@ -191,33 +166,25 @@ public class DriveTrain {
         rightBack.setPower(0);
     }
 
-    public void turnRight (double power, int tic) {
-        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    public void turnRightOdometery (double power, int tic) {
+        leftOdometer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightOdometer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftOdometer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightOdometer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        leftFront.setTargetPosition(tic);
-        rightFront.setTargetPosition(-tic);
-        leftBack.setTargetPosition(tic);
-        rightBack.setTargetPosition(-tic);
+        leftOdometer.setTargetPosition(tic);
+        rightOdometer.setTargetPosition(tic);
 
-        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftOdometer.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightOdometer.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         leftFront.setPower(power);
-        rightFront.setPower(power);
+        rightFront.setPower(-power);
         leftBack.setPower(power);
-        rightBack.setPower(power);
+        rightBack.setPower(-power);
 
-        while (leftFront.isBusy() && rightFront.isBusy() && leftBack.isBusy() && rightBack.isBusy() );
+        while (leftOdometer.isBusy() && rightOdometer.isBusy());
 
         leftFront.setPower(0);
         rightFront.setPower(0);
@@ -225,33 +192,25 @@ public class DriveTrain {
         rightBack.setPower(0);
     }
 
-    public void turnLeft (double power, int tic) {
-        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    public void turnLeftOdometery (double power, int tic) {
+        leftOdometer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightOdometer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftOdometer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightOdometer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        leftFront.setTargetPosition(-tic);
-        rightFront.setTargetPosition(tic);
-        leftBack.setTargetPosition(-tic);
-        rightBack.setTargetPosition(tic);
+        leftOdometer.setTargetPosition(tic);
+        rightOdometer.setTargetPosition(tic);
 
-        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftOdometer.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightOdometer.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        leftFront.setPower(power);
+        leftFront.setPower(-power);
         rightFront.setPower(power);
-        leftBack.setPower(power);
+        leftBack.setPower(-power);
         rightBack.setPower(power);
 
-        while (leftFront.isBusy() && rightFront.isBusy() && leftBack.isBusy() && rightBack.isBusy() );
+        while (leftOdometer.isBusy() && rightOdometer.isBusy());
 
         leftFront.setPower(0);
         rightFront.setPower(0);

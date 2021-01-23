@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.morgan;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,6 +12,7 @@ import org.firstinspires.ftc.teamcode.morgan.OdometryGlobalCoordinatePosition;
  * Created by Sarthak on 10/4/2019.
  */
 @TeleOp(name = "My Odometry OpMode")
+@Disabled
 public class MyOdometryOpmode extends LinearOpMode {
     //Drive motors
     DcMotor right_front, right_back, left_front, left_back;
@@ -35,7 +37,7 @@ public class MyOdometryOpmode extends LinearOpMode {
         left_front.setDirection(DcMotorSimple.Direction.REVERSE);
         left_back.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        driveTrain = new DriveTrain(left_front, right_front, left_back, right_back);
+        driveTrain = new DriveTrain(left_front, right_front, left_back, right_back, verticalLeft, verticalRight, horizontal);
 
         telemetry.addData("Status", "Init Complete");
         telemetry.update();

@@ -22,12 +22,13 @@ import org.firstinspires.ftc.teamcode.morgan.WobbleArm;
 import java.util.List;
 
 @Autonomous (name = "Red", group = "red")
-//@Disabled
+@Disabled
 public class Red extends LinearOpMode {
 
     RobotConfig robotConfig;
 
     DcMotor leftFront, rightFront, leftBack, rightBack;
+    DcMotor lO, rO, fO;
 
     DcMotor intake;
     CRServo intakeWheel;
@@ -90,8 +91,8 @@ public class Red extends LinearOpMode {
 
         finger = hardwareMap.crservo.get(robotConfig.finger);
 
-        driveTrain = new DriveTrain(leftFront, rightFront, leftBack, rightBack);
-        intakeClass = new Intake(intake, intakeWheel);
+        driveTrain = new DriveTrain(leftFront, rightFront, leftBack, rightBack, lO, rO, fO);
+        intakeClass = new Intake(intake);
         shooter = new Shooter(rotation, flywheel, ringPusher);
         wobbleArm = new WobbleArm(wobbleGoalArm, finger);
 
@@ -114,7 +115,7 @@ public class Red extends LinearOpMode {
 
         waitForStart();
 
-        finger.setPower(1);
+        /*finger.setPower(1);
 
         wobbleArm.armUp(0.25, 200);
 
@@ -174,7 +175,7 @@ public class Red extends LinearOpMode {
 
         if (tfod != null) {
             tfod.shutdown();
-        }
+        }*/
 
     }
 

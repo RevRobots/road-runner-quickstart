@@ -15,6 +15,7 @@ public class WobbleArm {
     boolean fullSpeed = false;
 
     Toggles toggles = new Toggles();
+    ElapsedTime timer = new ElapsedTime();
 
     public WobbleArm (DcMotor wA, CRServo f) {
 
@@ -58,7 +59,7 @@ public class WobbleArm {
 
         wobbleArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        wobbleArm.setTargetPosition(tick);
+        wobbleArm.setTargetPosition(-tick);
 
         wobbleArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
@@ -99,6 +100,16 @@ public class WobbleArm {
 
         finger.setPower(0);
 
+    }
+
+    public void timedUp (double power, int milliseconds) {
+        timer.reset();
+
+        wobbleArm.setPower(power);
+
+        while(timer.milliseconds() >= milliseconds);
+
+        wobbleArm.setPower(0);
     }
 
 }

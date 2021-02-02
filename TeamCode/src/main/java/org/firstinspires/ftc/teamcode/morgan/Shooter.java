@@ -151,4 +151,36 @@ public class Shooter {
         }
     }*/
 
+    public void rotateUp(double power, int tic) {
+        rotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        rotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        rotation.setTargetPosition(-tic);
+
+        rotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        rotation.setPower(power);
+
+        while(rotation.isBusy());
+
+        rotation.setPower(0);
+    }
+
+    public void rotateDown(double power, int tic) {
+        rotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        rotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        rotation.setTargetPosition(tic);
+
+        rotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        rotation.setPower(power);
+
+        while(rotation.isBusy());
+
+        rotation.setPower(0);
+    }
+
 }

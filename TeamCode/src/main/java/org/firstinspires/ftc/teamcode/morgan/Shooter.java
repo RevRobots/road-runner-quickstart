@@ -130,16 +130,6 @@ public class Shooter {
 
     }
 
-    public void trigger () {
-        if (ringPusher.getPosition() != 0.5 && launched == false) {
-            ringPusher.setPosition(0.5);
-            launched = true;
-        } else if (ringPusher.getPosition() == 0.5 && launched == true) {
-            ringPusher.setPosition(0);
-            launched = false;
-        }
-    }
-
     /*public void trigger () {
 
         triggerTime.reset();
@@ -181,6 +171,14 @@ public class Shooter {
         while(rotation.isBusy());
 
         rotation.setPower(0);
+    }
+
+    public void trigger () throws InterruptedException {
+        ringPusher.setPosition(0.5);
+
+        Thread.sleep(2000);
+
+        ringPusher.setPosition(0);
     }
 
 }

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.armstrong;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -21,6 +22,8 @@ public class ArmstrongDrive extends OpMode {
 
     DcMotor lO, rO, fO;
 
+    BNO055IMU imu;
+
     DriveTrain driveTrain;
 
     @Override
@@ -32,6 +35,8 @@ public class ArmstrongDrive extends OpMode {
         rightFront = hardwareMap.dcMotor.get("rightFront");
         leftBack = hardwareMap.dcMotor.get("leftBack");
         rightBack = hardwareMap.dcMotor.get("rightBack");
+
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
 
         driveTrain = new DriveTrain(leftFront, rightFront, leftBack, rightBack, lO, rO, fO);
 

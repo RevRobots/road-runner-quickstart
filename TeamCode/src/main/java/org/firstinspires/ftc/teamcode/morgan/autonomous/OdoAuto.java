@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -24,6 +25,7 @@ import org.firstinspires.ftc.teamcode.morgan.Shooter;
 import org.firstinspires.ftc.teamcode.morgan.WobbleArm;
 
 import java.util.List;
+import java.util.TreeMap;
 
 //@Disabled
 @Autonomous (name = "Odometery Autonomous", group = "Red")
@@ -45,13 +47,14 @@ public class OdoAuto extends LinearOpMode {
     CRServo finger;
 
     BNO055IMU imu;
-    Orientation angles;
-    Acceleration gravity;
 
     DriveTrain drive;
     Intake intakeClass;
     Shooter shooter;
     WobbleArm wobbleArm;
+
+    Orientation lastAngles;
+    double globalAngles, power = 0.30, correction, rotZ;
 
     ElapsedTime timer;
 
@@ -89,7 +92,16 @@ public class OdoAuto extends LinearOpMode {
         wobbleGoal = hardwareMap.get(DcMotor.class, robotConfig.wobbleArm);
         finger = hardwareMap.get(CRServo.class, robotConfig.finger);
 
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+
+        parameters.mode                = BNO055IMU.SensorMode.IMU;
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled      = false;
+
         imu = hardwareMap.get(BNO055IMU.class, robotConfig.imu);
+
+        imu.initialize(parameters);
 
         drive = new DriveTrain(leftFront, rightFront, leftBack, rightBack, leftOdometer, rightOdometer, frontOdometer);
         intakeClass = new Intake(intake);
@@ -97,6 +109,17 @@ public class OdoAuto extends LinearOpMode {
         wobbleArm = new WobbleArm(wobbleGoal, finger);
 
         timer = new ElapsedTime();
+
+        ringPusher.setPosition(0);
+
+        telemetry.addData("Mode", "calibrating...");
+        telemetry.update();
+
+        /*while (!isStopRequested() && !imu.isGyroCalibrated())
+        {
+            sleep(50);
+            idle();
+        }*/
 
         initVuforia();
         initTfod();
@@ -149,9 +172,9 @@ public class OdoAuto extends LinearOpMode {
                             if (recognition.getLabel() == "Single") {
                                 drive.rightEncoder(0.25, 600);
 
-                                drive.forwardsEncoder(0.375, 2125);
+                                drive.forwardsEncoder(0.25, 2125);
 
-                                drive.turnLeftEncoder(0.25, 400);
+                                drive.turnLeftEncoder(0.25, 500);
 
                                 drive.forwardsEncoder(0.25, 800);
 
@@ -166,6 +189,46 @@ public class OdoAuto extends LinearOpMode {
                                 finger.setPower(0);
 
                                 drive.backwardsEncoder(0.25, 800);
+
+                                Thread.sleep(25000);
+
+                                /*drive.turnRightEncoder(0.25, 300);
+
+                                drive.backwardsAccelEncoder(0.25, 0.625, 2900);
+
+                                drive.forwardsEncoder(0.25, 250);
+
+                                drive.turnLeftEncoder(0.25, 825);
+
+                                drive.forwardsEncoder(0.25, 500);
+
+                                finger.setPower(-1);
+
+                                Thread.sleep(750);
+
+                                drive.moveMotor(wobbleGoal, 0.25, -500);
+
+                                wobbleGoal.setPower(0.1);
+
+                                drive.backwardsEncoder(0.25, 500);
+
+                                drive.turnRightEncoder(0.25, 825);
+
+                                drive.forwardsAccelEncoder(0.25, 0.625, 2000);
+
+                                drive.turnLeftEncoder(0.25, 300);
+
+                                drive.forwardsEncoder(0.375, 800);
+
+                                drive.moveMotor(wobbleGoal, 0.25, 500);
+
+                                finger.setPower(1);
+
+                                Thread.sleep(500);
+
+                                finger.setPower(0);
+
+                                drive.backwardsEncoder(0.25, 800);*/
 
                                 Thread.sleep(25000);
                             } else if (recognition.getLabel() == "Quad") {
@@ -200,15 +263,13 @@ public class OdoAuto extends LinearOpMode {
                             reset = true;
                         }
 
-                        if(timer.milliseconds() >= 3000) {
+                        if(timer.milliseconds() >= 2000) {
                             if(updatedRecognitions.size() == 0) {
                                 drive.rightEncoder(0.25, 600);
 
-                                drive.forwardsEncoder(0.375, 2125);
+                                drive.forwardsEncoder(0.375, 1800);
 
-                                drive.turnLeftEncoder(0.25, 100);
-
-                                drive.moveMotor(wobbleGoal, 0.25, 400);
+                                drive.moveMotor(wobbleGoal, 0.25, 350);
 
                                 Thread.sleep(1000);
 
@@ -218,7 +279,41 @@ public class OdoAuto extends LinearOpMode {
 
                                 finger.setPower(0);
 
+                                drive.backwardsEncoder(0.45, 2800);
+
+                                drive.forwardsEncoder(0.25, 280);
+
+                                drive.turnLeftEncoder(0.25, 825);
+
+                                drive.forwardsEncoder(0.25, 550);
+
+                                finger.setPower(-1);
+
+                                Thread.sleep(750);
+
+                                drive.moveMotor(wobbleGoal, 0.25, -500);
+
+                                wobbleGoal.setPower(0.1);
+
+                                drive.backwardsEncoder(0.25, 500);
+
+                                drive.turnRightEncoder(0.25, 825);
+
+                                drive.forwardsEncoder(0.25, 2000);
+
+                                drive.moveMotor(wobbleGoal, 0.25, 500);
+
+                                finger.setPower(1);
+
+                                Thread.sleep(500);
+
+                                finger.setPower(0);
+
                                 drive.backwardsEncoder(0.25, 100);
+
+                                drive.turnLeftEncoder(0.25, 200);
+
+                                drive.forwardsEncoder(0.25, 500);
 
                                 Thread.sleep(25000);
                             }

@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.morgan;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 import org.firstinspires.ftc.teamcode.util.Encoder;
 
@@ -10,13 +12,15 @@ public class DriveTrain {
 
     DcMotor leftFront, rightFront, leftBack, rightBack;
     DcMotor leftOdometer, rightOdometer, frontOdometer;
+    BNO055IMU imu;
 
-    double driveSpeedLimiter = 2;
+    double driveSpeedLimiter = 0.5;
     int speedCounter = 2;
 
     boolean brakeToggle = true;
 
     Toggles toggles = new Toggles();
+    PIDFCoefficients pidRotate, pidDrive;
 
     public DriveTrain (DcMotor lF, DcMotor rF, DcMotor lB, DcMotor rB, DcMotor lO, DcMotor rO, DcMotor fO) {
 
@@ -31,21 +35,19 @@ public class DriveTrain {
     }
 
     public void driveTrainControl (Gamepad gamepad1) {
-        leftFront.setPower((-gamepad1.left_stick_y + gamepad1.right_stick_x - (gamepad1.left_stick_x)) / driveSpeedLimiter);
-        rightFront.setPower((-gamepad1.left_stick_y - gamepad1.right_stick_x + (gamepad1.left_stick_x)) / driveSpeedLimiter);
-        leftBack.setPower((-gamepad1.left_stick_y + gamepad1.right_stick_x + (gamepad1.left_stick_x)) / driveSpeedLimiter);
-        rightBack.setPower((-gamepad1.left_stick_y - gamepad1.right_stick_x - (gamepad1.left_stick_x)) / driveSpeedLimiter);
+        leftFront.setPower((-gamepad1.left_stick_y + gamepad1.right_stick_x + (gamepad1.left_stick_x)) * driveSpeedLimiter);
+        rightFront.setPower((-gamepad1.left_stick_y - gamepad1.right_stick_x - (gamepad1.left_stick_x)) * driveSpeedLimiter);
+        leftBack.setPower((-gamepad1.left_stick_y + gamepad1.right_stick_x - (gamepad1.left_stick_x)) * driveSpeedLimiter);
+        rightBack.setPower((-gamepad1.left_stick_y - gamepad1.right_stick_x + (gamepad1.left_stick_x)) * driveSpeedLimiter);
 
-        speedCounter = toggles.multiNumericToggle(1, 4, 'A', gamepad1);
-
-        if (speedCounter == 1) {
-            driveSpeedLimiter = 4;
-        } else if (speedCounter == 2) {
-            driveSpeedLimiter = 2;
-        } else if (speedCounter == 3) {
-            driveSpeedLimiter = 4/3;
-        } else if (speedCounter == 4) {
+        if(gamepad1.a) {
             driveSpeedLimiter = 1;
+        } else if (gamepad1.x) {
+            driveSpeedLimiter = 0.25;
+        } else if (gamepad1.y) {
+            driveSpeedLimiter = 0.5;
+        } else if (gamepad1.b) {
+            driveSpeedLimiter = 0.5;
         }
 
         brakeToggle = toggles.onOffToggle('B', gamepad1);
@@ -127,10 +129,10 @@ public class DriveTrain {
 
         frontOdometer.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        leftFront.setPower(-power);
-        rightFront.setPower(power);
-        leftBack.setPower(power);
-        rightBack.setPower(-power);
+        leftFront.setPower(power);
+        rightFront.setPower(-power);
+        leftBack.setPower(-power);
+        rightBack.setPower(power);
 
         while (frontOdometer.isBusy());
 
@@ -149,10 +151,10 @@ public class DriveTrain {
 
         frontOdometer.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        leftFront.setPower(power);
-        rightFront.setPower(-power);
-        leftBack.setPower(-power);
-        rightBack.setPower(power);
+        leftFront.setPower(-power);
+        rightFront.setPower(power);
+        leftBack.setPower(power);
+        rightBack.setPower(-power);
 
         while (frontOdometer.isBusy());
 
@@ -207,6 +209,238 @@ public class DriveTrain {
         rightBack.setPower(power);
 
         while (leftOdometer.isBusy() && rightOdometer.isBusy());
+
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        leftBack.setPower(0);
+        rightBack.setPower(0);
+    }
+
+    public void forwardsAccelEncoder (double minPower, double maxPower, int tic) {
+        double accelerationTracker = minPower;
+
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        leftFront.setTargetPosition(-tic);
+        rightFront.setTargetPosition(tic);
+        leftBack.setTargetPosition(-tic);
+        rightBack.setTargetPosition(tic);
+
+        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        while(leftFront.isBusy() && rightFront.isBusy() && leftBack.isBusy() && rightBack.isBusy()) {
+            if (getAverageTicks() > 0.75*tic) {
+                accelerationTracker = accelerationTracker/2;
+                if (accelerationTracker < minPower) {
+                    accelerationTracker = minPower;
+                }
+            } else if (accelerationTracker < maxPower) {
+                accelerationTracker = 1.125*accelerationTracker;
+                if (accelerationTracker > maxPower) {
+                    accelerationTracker = maxPower;
+                }
+            }
+
+            leftFront.setPower(accelerationTracker);
+            rightFront.setPower(accelerationTracker);
+            leftBack.setPower(accelerationTracker);
+            rightBack.setPower(accelerationTracker);
+        }
+
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        leftBack.setPower(0);
+        rightBack.setPower(0);
+    }
+
+    public void backwardsAccelEncoder (double minPower, double maxPower, int tic) {
+        double accelerationTracker = minPower;
+
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        leftFront.setTargetPosition(tic);
+        rightFront.setTargetPosition(-tic);
+        leftBack.setTargetPosition(tic);
+        rightBack.setTargetPosition(-tic);
+
+        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        while(leftFront.isBusy() && rightFront.isBusy() && leftBack.isBusy() && rightBack.isBusy()) {
+            if (getAverageTicks() > 0.75*tic) {
+                accelerationTracker = accelerationTracker/2;
+                if (accelerationTracker < minPower) {
+                    accelerationTracker = minPower;
+                }
+            } else if (accelerationTracker < maxPower) {
+                accelerationTracker = 1.125*accelerationTracker;
+                if (accelerationTracker > maxPower) {
+                    accelerationTracker = maxPower;
+                }
+            }
+
+            leftFront.setPower(accelerationTracker);
+            rightFront.setPower(accelerationTracker);
+            leftBack.setPower(accelerationTracker);
+            rightBack.setPower(accelerationTracker);
+        }
+
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        leftBack.setPower(0);
+        rightBack.setPower(0);
+    }
+
+    public void rightAccelEncoder (double power, int tic) {
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        leftFront.setTargetPosition(-tic);
+        rightFront.setTargetPosition(-tic);
+        leftBack.setTargetPosition(tic);
+        rightBack.setTargetPosition(tic);
+
+        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        leftFront.setPower(power);
+        rightFront.setPower(power);
+        leftBack.setPower(power);
+        rightBack.setPower(power);
+
+        while(leftFront.isBusy() && rightFront.isBusy() && leftBack.isBusy() && rightBack.isBusy());
+
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        leftBack.setPower(0);
+        rightBack.setPower(0);
+    }
+
+    public void leftAccelEncoder (double power, int tic) {
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        leftFront.setTargetPosition(tic);
+        rightFront.setTargetPosition(tic);
+        leftBack.setTargetPosition(-tic);
+        rightBack.setTargetPosition(-tic);
+
+        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        leftFront.setPower(power);
+        rightFront.setPower(power);
+        leftBack.setPower(power);
+        rightBack.setPower(power);
+
+        while(leftFront.isBusy() && rightFront.isBusy() && leftBack.isBusy() && rightBack.isBusy());
+
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        leftBack.setPower(0);
+        rightBack.setPower(0);
+    }
+
+    public void turnRightAccelEncoder (double power, int tic) {
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        leftFront.setTargetPosition(-tic);
+        rightFront.setTargetPosition(-tic);
+        leftBack.setTargetPosition(-tic);
+        rightBack.setTargetPosition(-tic);
+
+        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        leftFront.setPower(power);
+        rightFront.setPower(power);
+        leftBack.setPower(power);
+        rightBack.setPower(power);
+
+        while(leftFront.isBusy() && rightFront.isBusy() && leftBack.isBusy() && rightBack.isBusy());
+
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        leftBack.setPower(0);
+        rightBack.setPower(0);
+    }
+
+    public void turnLeftAccelEncoder (double power, int tic) {
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        leftFront.setTargetPosition(tic);
+        rightFront.setTargetPosition(tic);
+        leftBack.setTargetPosition(tic);
+        rightBack.setTargetPosition(tic);
+
+        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        leftFront.setPower(power);
+        rightFront.setPower(power);
+        leftBack.setPower(power);
+        rightBack.setPower(power);
+
+        while(leftFront.isBusy() && rightFront.isBusy() && leftBack.isBusy() && rightBack.isBusy());
 
         leftFront.setPower(0);
         rightFront.setPower(0);
@@ -293,10 +527,10 @@ public class DriveTrain {
         leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        leftFront.setTargetPosition(tic);
-        rightFront.setTargetPosition(tic);
-        leftBack.setTargetPosition(-tic);
-        rightBack.setTargetPosition(-tic);
+        leftFront.setTargetPosition(-tic);
+        rightFront.setTargetPosition(-tic);
+        leftBack.setTargetPosition(tic);
+        rightBack.setTargetPosition(tic);
 
         leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -327,10 +561,10 @@ public class DriveTrain {
         leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        leftFront.setTargetPosition(-tic);
-        rightFront.setTargetPosition(-tic);
-        leftBack.setTargetPosition(tic);
-        rightBack.setTargetPosition(tic);
+        leftFront.setTargetPosition(tic);
+        rightFront.setTargetPosition(tic);
+        leftBack.setTargetPosition(-tic);
+        rightBack.setTargetPosition(-tic);
 
         leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -416,6 +650,13 @@ public class DriveTrain {
         rightFront.setPower(0);
         leftBack.setPower(0);
         rightBack.setPower(0);
+    }
+
+    public int getAverageTicks (){
+        int addedTicks = leftFront.getCurrentPosition() + rightFront.getCurrentPosition() + leftBack.getCurrentPosition() + rightBack.getCurrentPosition();
+        int averageTicks = addedTicks/4;
+
+        return averageTicks;
     }
 
     public void moveMotor (DcMotor motor, double power, int tic) {

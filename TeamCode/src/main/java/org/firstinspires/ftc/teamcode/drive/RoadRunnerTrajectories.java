@@ -5,80 +5,65 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 
 public class RoadRunnerTrajectories {
-
     SampleMecanumDrive driveTrain;
 
-    public RoadRunnerTrajectories (SampleMecanumDrive dT) {
-        driveTrain = dT;
+    public RoadRunnerTrajectories(SampleMecanumDrive dT) {
+        this.driveTrain = dT;
     }
 
-    public Trajectory forwardsByInch (double x, double y, double heading, double inches) {
-
-        Trajectory forwards = driveTrain.trajectoryBuilder(new Pose2d(x, y, heading))
+    public Trajectory forwardsByInch(double currentX, double currentY, double heading, double inches) {
+        Trajectory trajectory = driveTrain.trajectoryBuilder(new Pose2d(currentX, currentY, heading))
                 .forward(inches)
                 .build();
 
-        return forwards;
-
+        return trajectory;
     }
 
-    public Trajectory backwardsByInch (double x, double y, double heading, double inches) {
-
-        Trajectory backwards = driveTrain.trajectoryBuilder(new Pose2d(x, y, heading))
+    public Trajectory backwardsByInch(double currentX, double currentY, double heading, double inches) {
+        Trajectory trajectory = driveTrain.trajectoryBuilder(new Pose2d(currentX, currentY, heading))
                 .back(inches)
                 .build();
 
-        return backwards;
-
+        return trajectory;
     }
 
-    public Trajectory strafeRightByInch (double x, double y, double heading, double inches) {
-
-        Trajectory strafeRight = driveTrain.trajectoryBuilder(new Pose2d(x, y, heading))
+    public Trajectory strafeRightByInch(double currentX, double currentY, double heading, double inches) {
+        Trajectory trajectory = driveTrain.trajectoryBuilder(new Pose2d(currentX, currentY, heading))
                 .strafeRight(inches)
                 .build();
 
-        return strafeRight;
-
+        return trajectory;
     }
 
-    public Trajectory strafeLeftByInch (double x, double y, double heading, double inches) {
-
-        Trajectory strafeLeft = driveTrain.trajectoryBuilder(new Pose2d(x, y, heading))
+    public Trajectory strafeLeftByInch(double currentX, double currentY, double heading, double inches) {
+        Trajectory trajectory = driveTrain.trajectoryBuilder(new Pose2d(currentX, currentY, heading))
                 .strafeLeft(inches)
                 .build();
 
-        return strafeLeft;
+        return trajectory;
     }
 
-    public Trajectory lineToPoint (double currentX, double currentY, double heading, double goalX, double goalY) {
-
-        Trajectory lineTo = driveTrain.trajectoryBuilder(new Pose2d(currentX, currentY, heading))
+    public Trajectory lineToPoint(double currentX, double currentY, double heading, double goalX, double goalY) {
+        Trajectory trajectory = driveTrain.trajectoryBuilder(new Pose2d(currentX, currentY, heading))
                 .lineTo(new Vector2d(goalX, goalY))
                 .build();
 
-        return  lineTo;
-
+        return trajectory;
     }
 
-    public Trajectory strafeToPoint (double currentX, double currentY, double heading, double goalX, double goalY) {
-
-        Trajectory strafeTo = driveTrain.trajectoryBuilder(new Pose2d(currentX, currentY, heading))
+    public Trajectory strafeToPoint(double currentX, double currentY, double heading, double goalX, double goalY) {
+        Trajectory trajectory = driveTrain.trajectoryBuilder(new Pose2d(currentX, currentY, heading))
                 .strafeTo(new Vector2d(goalX, goalY))
                 .build();
 
-        return strafeTo;
-
+        return trajectory;
     }
 
-    public Trajectory splineToPoint (double currentX, double currentY, double currentHeading, double goalX, double goalY, double goalHeading) {
-
-        Trajectory splineTo = driveTrain.trajectoryBuilder(new Pose2d(currentX, currentY, currentHeading))
+    public Trajectory splineToPoint(double currentX, double currentY, double currentHeading, double goalX, double goalY, double goalHeading) {
+        Trajectory trajectory = driveTrain.trajectoryBuilder(new Pose2d(currentX, currentY, currentHeading))
                 .splineTo(new Vector2d(goalX, goalY), goalHeading)
                 .build();
 
-        return splineTo;
-
+        return trajectory;
     }
-
 }

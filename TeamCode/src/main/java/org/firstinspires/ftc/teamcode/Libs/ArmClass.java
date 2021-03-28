@@ -49,15 +49,24 @@ public class ArmClass {
      *    \    /           \    /
      *     \_/              \_/
      */
-    public void armDriveControl(Gamepad driveGamepad, double unaccountedArmTicks, boolean presets, boolean limitSwitches) {
+    public void armDriveControl(Gamepad driveGamepad, double unaccountedArmTicks, boolean limitSwitches) {
         //drive control for the arm
-
-        if(driveGamepad.right_bumper && extendedLimit.getState()) {
-            wobbleArm.setPower(0.5);
-        } else if(driveGamepad.left_bumper && retractedLimit.getState()) {
-            wobbleArm.setPower(-0.5);
+        if(limitSwitches) {
+            if(driveGamepad.right_bumper && extendedLimit.getState()) {
+                wobbleArm.setPower(0.5);
+            } else if(driveGamepad.left_bumper && retractedLimit.getState()) {
+                wobbleArm.setPower(-0.5);
+            } else {
+                wobbleArm.setPower(0);
+            }
         } else {
-            wobbleArm.setPower(0);
+            if(driveGamepad.right_bumper) {
+                wobbleArm.setPower(0.5 * armSpeedLimiter);
+            } else if(driveGamepad.left_bumper) {
+                wobbleArm.setPower(-0.5 * armSpeedLimiter);
+            } else {
+                wobbleArm.setPower(0);
+            }
         }
 
         //arm speed controller
@@ -166,4 +175,28 @@ public class ArmClass {
 
         wobbleArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);*/
     }   //end of setArmPosition(...)
+
+    /**
+     * Method: extendArm(...)
+     *  -   extends the arm until the limit switch triggers
+     * @param power - the speed the arm will use
+     */
+    public void extendArm(double power) {
+        while(extendedLimit.getState() == true) {
+            wobbleArm.setPower(power);
+        }
+        wobbleArm.setPower(0);
+    }
+
+    /**
+     * Method: retractArm(...)
+     *  -   retracts the arm until the limit switch triggers
+     * @param power - the speed the arm will use
+     */
+    public void retractArm(double power) {
+        while(retractedLimit.getState() == true) {
+            wobbleArm.setPower(-power);
+        }
+        wobbleArm.setPower(0);
+    }
 }

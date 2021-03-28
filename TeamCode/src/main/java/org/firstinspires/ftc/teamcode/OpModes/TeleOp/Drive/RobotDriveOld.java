@@ -84,7 +84,7 @@ public class RobotDriveOld extends LinearOpMode {
                 drive.mechanumDriveControl(gamepad1);
                 intake.intakeDriveControl(gamepad1);
                 ringPusherClass.ringPusherControl(gamepad2);
-                wobbleGoal.armDriveControl(gamepad2, 0, false, false);
+                wobbleGoal.armDriveControl(gamepad2, 0, false);
 
                 if(gamepad2.left_trigger != 0) {
                     shooter.setTargetShooterRPM(robot.HIGH_GOAL_SHOOTER_RPM);

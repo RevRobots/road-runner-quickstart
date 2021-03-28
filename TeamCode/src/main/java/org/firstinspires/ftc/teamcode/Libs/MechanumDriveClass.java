@@ -81,6 +81,13 @@ public class MechanumDriveClass {
         } else if(!reverseFlag) {
             reverseDriveControl = false;
         }   //end of if(...) - else if(...)
+
+        if(gamepad1.left_bumper) {
+            driveLeftEncoder(37.5, 400);
+
+        } else if(gamepad1.right_bumper) {
+            driveRightEncoder(37.5, 400);
+        }
     }   //end of mechanumDriveControl(...)
 
     /**
@@ -207,6 +214,11 @@ public class MechanumDriveClass {
         rightFront.setPower(0);
         leftBack.setPower(0);
         rightBack.setPower(0);
+
+        leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }   //end of driveRightEncoder(...)
 
     /**
@@ -249,6 +261,11 @@ public class MechanumDriveClass {
         rightFront.setPower(0);
         leftBack.setPower(0);
         rightBack.setPower(0);
+
+        leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }   //end of driveLeftEncoder(...)
 
     /**

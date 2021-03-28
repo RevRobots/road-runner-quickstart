@@ -62,7 +62,7 @@ public class MorganConstants {
     public static final double WOBBLE_GOAL_ARM_TICKS_PER_ROTATION = 1;
     public static final int WOBBLE_GOAL_ARM_EXTENDED_TICK = 1000;
     public static final boolean WOBBLE_GOAL_ARM_REVERSED = false;
-    public static final boolean WOBBLE_GOAL_FINGER_REVERSED = false;
+    public static final boolean WOBBLE_GOAL_FINGER_REVERSED = true;
     public static final boolean WOBBLE_GOAL_ARM_BRAKE = true;
 
     public static final String VUFORIA_LICENSE_KEY = "AQUWr4X/////AAABme38EPssRkvls9+q/BGPYgxKXBXELWHMdkTcCqUqHeyDpyXGWFLCTABgDXEMGe1EmsnDQxmJ7WQ069J3YSv+kOcfq3g2EnwZr2O3DujsIU1nT0aXgLlAtQU2r7wWAgHvR9ADO5pe/q7MzCyhjSTQLCgizGFLgmqfre0A9rjYcXYbYw11R3P7VRHnL3QHn3QH2oFVQfMb+dIzmZkfv0cd5qWvdhjovYF8hpZ/HT7veIa8ZQ9CIQ0541pxplXVud80z1xWpjFGJPaoQGO+xKWZ8E+Zlu7z5umiaV1+ChGeJ9pPyIJn0LsnoIHumZoYb4di4tFygMPVmH8ChsTlGJjaPBSCRBFjxzBqsXmBZY7eCa6S";

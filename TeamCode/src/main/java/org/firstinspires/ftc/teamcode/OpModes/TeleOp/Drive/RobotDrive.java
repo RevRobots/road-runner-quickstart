@@ -14,6 +14,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.ReadWriteFile;
 
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.Hardware.MorganConstants;
 import org.firstinspires.ftc.teamcode.Hardware.PoseSettings;
@@ -21,6 +23,8 @@ import org.firstinspires.ftc.teamcode.Libs.MechanumDriveClass;
 import org.firstinspires.ftc.teamcode.Libs.MovementClass;
 import org.firstinspires.ftc.teamcode.Libs.RingPusherClass;
 import org.firstinspires.ftc.teamcode.Libs.ShooterClass;
+import org.firstinspires.ftc.teamcode.Libs.ShooterControlThread;
+import org.firstinspires.ftc.teamcode.Libs.ToggleClass;
 import org.firstinspires.ftc.teamcode.Libs.TwoPartIntakeClass;
 import org.firstinspires.ftc.teamcode.Libs.ArmClass;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -29,6 +33,8 @@ import java.io.File;
 
 @TeleOp (name = "Robot Drive 2.0", group = "Drive")
 public class RobotDrive extends LinearOpMode {
+
+
     SampleMecanumDrive localization;
     MorganConstants robot;
     PoseSettings poses;
@@ -49,9 +55,15 @@ public class RobotDrive extends LinearOpMode {
 
     MechanumDriveClass drive;
     TwoPartIntakeClass intake;
-    ShooterClass shooter;
+    ShooterControlThread shooterControl;
+    Thread shooterThread;
     RingPusherClass ringPusherClass;
     ArmClass wobbleGoal;
+    ToggleClass shooterRPMToggle;
+
+    private int currentShooterRPM = 0;
+    private int currentRPMSetting = 0;
+    private boolean currentShooterSetting = false; //is high goal RPM
 
     @Override
     public void runOpMode() {
@@ -109,23 +121,48 @@ public class RobotDrive extends LinearOpMode {
 
         drive = new MechanumDriveClass(leftFront, rightFront, leftBack, rightBack, imu);
         intake =  new TwoPartIntakeClass(mainIntake, hopperIntake);
-        shooter = new ShooterClass(false, flywheel, null);
+        shooterControl = new ShooterControlThread(flywheel);
+        shooterThread = new Thread(shooterControl);
         ringPusherClass = new RingPusherClass(ringPusher);
         wobbleGoal = new ArmClass(arm, finger, retractedLimit, extendedLimit);
+        shooterRPMToggle = new ToggleClass();
 
         telemetry.addData("Status: ", "Ready");
         telemetry.update();
 
         waitForStart();
 
+        shooterThread.start();
+        currentShooterRPM = robot.IDLE_SHOOTER_RPM;
+
         if(opModeIsActive()) {
             while(opModeIsActive()) {
                 drive.mechanumDriveControl(gamepad1);
                 intake.intakeDriveControl(gamepad2);
-                shooter.shooterDriveControl(gamepad1, true);
+                if(gamepad1.left_trigger != 0) {
+                    currentShooterRPM = currentRPMSetting;
+                } else {
+                    currentShooterRPM = robot.IDLE_SHOOTER_RPM;
+                }
+                shooterControl.setTargetShooterRPM(currentShooterRPM);
                 ringPusherClass.ringPusherControl(gamepad1);
                 wobbleGoal.armDriveControl(gamepad2, 0, true);
+
+                currentShooterSetting = shooterRPMToggle.buttonReleaseToggle(gamepad1.dpad_left, false);
+
+                if(currentShooterSetting == false) {
+                    telemetry.addData("Current Shooter RPM: ", "High Goal");
+                    currentRPMSetting = robot.HIGH_GOAL_SHOOTER_RPM;
+                } else if (currentShooterSetting == true) {
+                    telemetry.addData("Current Shooter RPM: ", "Power Shot");
+                    currentRPMSetting = robot.POWER_SHOT_SHOOTER_RPM;
+                }
+
+                telemetry.update();
             }
+
+            shooterControl.setTargetShooterRPM(0);
+            shooterControl.stopShooterThread();
         }
     }
 }

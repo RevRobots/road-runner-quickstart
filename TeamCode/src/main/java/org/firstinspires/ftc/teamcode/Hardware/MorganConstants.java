@@ -51,9 +51,10 @@ public class MorganConstants {
 
     public static final boolean RUN_DUAL_SHOOTER = false;
     public static final double FLYWHEEL_TICKS_PER_ROTATION = 28;
-    public static final int HIGH_GOAL_SHOOTER_RPM = 10000;
-    public static final int POWER_SHOT_SHOOTER_RPM = 6000;
+    public static final int HIGH_GOAL_SHOOTER_RPM = 6000;
+    public static final int POWER_SHOT_SHOOTER_RPM = 4750;
     public static final int IDLE_SHOOTER_RPM = 3000;
+    public static double SHOOTER_KP = 0.0125;
     public static final boolean FLYWHEELS_REVERSED = false;
     public static final boolean FLYWHEELS_BRAKE = false;
     public static final double RING_PUSHER_RETRACTED = 0.25;
@@ -66,6 +67,7 @@ public class MorganConstants {
     public static final boolean WOBBLE_GOAL_ARM_BRAKE = true;
 
     public static final String VUFORIA_LICENSE_KEY = "AQUWr4X/////AAABme38EPssRkvls9+q/BGPYgxKXBXELWHMdkTcCqUqHeyDpyXGWFLCTABgDXEMGe1EmsnDQxmJ7WQ069J3YSv+kOcfq3g2EnwZr2O3DujsIU1nT0aXgLlAtQU2r7wWAgHvR9ADO5pe/q7MzCyhjSTQLCgizGFLgmqfre0A9rjYcXYbYw11R3P7VRHnL3QHn3QH2oFVQfMb+dIzmZkfv0cd5qWvdhjovYF8hpZ/HT7veIa8ZQ9CIQ0541pxplXVud80z1xWpjFGJPaoQGO+xKWZ8E+Zlu7z5umiaV1+ChGeJ9pPyIJn0LsnoIHumZoYb4di4tFygMPVmH8ChsTlGJjaPBSCRBFjxzBqsXmBZY7eCa6S";
+    public static final int DETECTION_REST_TIME = 1000;
 
     /**
      * Constructor: RobotConstants()

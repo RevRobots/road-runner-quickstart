@@ -13,7 +13,6 @@ import org.firstinspires.ftc.teamcode.Libs.RingPusherClass;
 import org.firstinspires.ftc.teamcode.Libs.ShooterControlThread;
 
 @TeleOp (name = "Shooter Speed Calibration", group = "Calibration")
-@Disabled
 public class ShooterClaibration extends LinearOpMode {
     MorganConstants robot;
 
@@ -25,7 +24,7 @@ public class ShooterClaibration extends LinearOpMode {
     RingPusherClass ringPusherClass;
     ElapsedTime timer = new ElapsedTime();
 
-    private int shooterRPM = 5000;
+    private int shooterRPM = 6000;
     private boolean isPressed = false;
 
     @Override
@@ -33,7 +32,6 @@ public class ShooterClaibration extends LinearOpMode {
         robot = new MorganConstants(hardwareMap);
 
         flywheel = hardwareMap.get(DcMotor.class, robot.FRONT_FLYWHEEL);
-        flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
         ringPusher = hardwareMap.get(Servo.class, robot.RING_PUSHER);
 
         shooterControlThread = new ShooterControlThread(flywheel);
@@ -49,9 +47,9 @@ public class ShooterClaibration extends LinearOpMode {
                 shooterControlThread.setTargetShooterRPM(shooterRPM);
 
                 if(gamepad2.right_trigger != 0) {
-                    ringPusher.setPosition(0.5);
+                    ringPusher.setPosition(robot.RING_PUSHER_TRIGGERED);
                 } else {
-                    ringPusher.setPosition(0);
+                    ringPusher.setPosition(robot.RING_PUSHER_RETRACTED);
                 }
 
                 if(gamepad2.dpad_up && timer.milliseconds() >= 10) {

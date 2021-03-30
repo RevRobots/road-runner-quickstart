@@ -96,7 +96,7 @@ public class ShooterControlThread implements Runnable{
         double shooterPower = this.currentShooterPower;
         double error = this.targetShooterRPM - measureRPM();
 
-        double Cp = 0.000015; //aka kP
+        double Cp = robotConstants.SHOOTER_KP; //aka kP
         double Ci = 0.0003; //aka kI
         double Cd = 0.0001; //aka kD
 

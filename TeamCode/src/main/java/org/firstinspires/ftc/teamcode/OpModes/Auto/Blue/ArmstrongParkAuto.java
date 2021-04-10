@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpModes.Auto.Blue;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -8,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.teamcode.Hardware.ArmstrongConstants;
 import org.firstinspires.ftc.teamcode.Libs.MechanumDriveClass;
 
+@Disabled
 @Autonomous (name = "Armstrong Park Auto", group = "Blue")
 public class ArmstrongParkAuto extends LinearOpMode {
     ArmstrongConstants robot;

@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.OpModes.TeleOp.Drive;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -11,29 +9,19 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.ReadWriteFile;
 
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.Hardware.MorganConstants;
 import org.firstinspires.ftc.teamcode.Hardware.PoseSettings;
+import org.firstinspires.ftc.teamcode.Libs.ArmClass;
 import org.firstinspires.ftc.teamcode.Libs.MechanumDriveClass;
-import org.firstinspires.ftc.teamcode.Libs.MovementClass;
 import org.firstinspires.ftc.teamcode.Libs.RingPusherClass;
-import org.firstinspires.ftc.teamcode.Libs.ShooterClass;
 import org.firstinspires.ftc.teamcode.Libs.ShooterControlThread;
 import org.firstinspires.ftc.teamcode.Libs.ToggleClass;
 import org.firstinspires.ftc.teamcode.Libs.TwoPartIntakeClass;
-import org.firstinspires.ftc.teamcode.Libs.ArmClass;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
-import java.io.File;
-
-@TeleOp (name = "Robot Drive 2.0", group = "Drive")
-public class RobotDrive extends LinearOpMode {
-
+@TeleOp (name = "Lonely Boi", group = "Drive")
+public class LonelyBoi extends LinearOpMode {
     SampleMecanumDrive localization;
     MorganConstants robot;
     PoseSettings poses;
@@ -136,8 +124,22 @@ public class RobotDrive extends LinearOpMode {
 
         if(opModeIsActive()) {
             while(opModeIsActive()) {
-                drive.mechanumDriveControl(gamepad1);
-                intake.intakeDriveControl(gamepad2);
+                leftFront.setPower(((-gamepad1.left_stick_y) + (gamepad1.right_stick_x) + (gamepad1.left_stick_x)) * 0.5);
+                rightFront.setPower(((-gamepad1.left_stick_y) - (gamepad1.right_stick_x) - (gamepad1.left_stick_x)) * 0.5);
+                leftBack.setPower(((-gamepad1.left_stick_y) + (gamepad1.right_stick_x) - (gamepad1.left_stick_x)) * 0.5);
+                rightBack.setPower(((-gamepad1.left_stick_y) - (gamepad1.right_stick_x) + (gamepad1.left_stick_x)) * 0.5);
+
+                if(gamepad1.dpad_down) {
+                    mainIntake.setPower(robot.MAIN_INTAKE_POWER);
+                    hopperIntake.setPower(robot.HOPPER_INTAKE_POWER);
+                } else if(gamepad1.dpad_up) {
+                    mainIntake.setPower(-(robot.MAIN_INTAKE_POWER));
+                    hopperIntake.setPower(-(robot.HOPPER_INTAKE_POWER));
+                } else {
+                    mainIntake.setPower(0);
+                    hopperIntake.setPower(0);
+                }
+
                 if(gamepad1.left_trigger != 0) {
                     currentShooterRPM = currentRPMSetting;
                 } else {
@@ -145,7 +147,22 @@ public class RobotDrive extends LinearOpMode {
                 }
                 shooterControl.setTargetShooterRPM(currentShooterRPM);
                 ringPusherClass.ringPusherControl(gamepad1);
-                wobbleGoal.armDriveControl(gamepad2, 0, true);
+
+                if(gamepad1.right_bumper && extendedLimit.getState()) {
+                    arm.setPower(0.5);
+                } else if(gamepad1.left_bumper && retractedLimit.getState()) {
+                    arm.setPower(-0.5);
+                } else {
+                    arm.setPower(0);
+                }
+
+                if(gamepad1.x) {
+                    finger.setPower(-1);
+                } else if(gamepad1.a) {
+                    finger.setPower(1);
+                } else {
+                    finger.setPower(0);
+                }
 
                 currentShooterSetting = shooterRPMToggle.buttonReleaseToggle(gamepad1.dpad_left, false);
 

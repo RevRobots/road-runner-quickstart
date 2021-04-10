@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Hardware.MorganConstants;
@@ -198,5 +199,14 @@ public class ArmClass {
             wobbleArm.setPower(-power);
         }
         wobbleArm.setPower(0);
+    }
+
+    public void dropWobble(double armPower, double fingerPower, int millisecondWait) {
+        extendArm(Math.abs(armPower));
+        ElapsedTime delay = new ElapsedTime();
+        finger.setPower(-(Math.abs(fingerPower)));
+        while(delay.milliseconds() < millisecondWait);
+        finger.setPower(0);
+        retractArm(-(Math.abs(armPower)));
     }
 }

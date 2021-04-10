@@ -28,8 +28,8 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 import java.util.List;
 
-@Autonomous (name = "Red Full", group = "Red")
-public class RedFull extends LinearOpMode {
+@Autonomous (name = "Red Gears", group = "Red")
+public class RedGearsAuto extends LinearOpMode {
     DcMotorEx flywheel = null;
     Servo ringPusher = null;
 
@@ -59,6 +59,7 @@ public class RedFull extends LinearOpMode {
         if(robot.FLYWHEELS_REVERSED) {
             flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
         }
+        ringPusher.setPosition(robot.RING_PUSHER_RETRACTED);
 
         arm = hardwareMap.get(DcMotor.class, robot.WOBBLE_GOAL_ARM);
         if(robot.WOBBLE_GOAL_ARM_REVERSED) {
@@ -77,40 +78,47 @@ public class RedFull extends LinearOpMode {
         RingPusherClass ringPusherClass = new RingPusherClass(ringPusher);
         ArmClass wobbleGoal = new ArmClass(arm, finger, retractedLimit, extendedLimit);
 
-        drive.setPoseEstimate(poses.redFullStartPoint);
+        drive.setPoseEstimate(poses.redGearsStartingPoint);
         Pose2d secondWobbleStart;
 
-        Trajectory ringDetectionMovement = drive.trajectoryBuilder(poses.redFullStartPoint, Math.toRadians(0))
-                .splineToConstantHeading(new Vector2d(-20.5, -17.5), Math.toRadians(0))
+        Trajectory ringDetectionMovement = drive.trajectoryBuilder(poses.redGearsStartingPoint, Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(-22, -54), Math.toRadians(0))
                 .build();
 
-        Trajectory boxCMovements = drive.trajectoryBuilder(new Pose2d(-20, -17.5, Math.toRadians(-90)), Math.toRadians(0))
-                .splineToLinearHeading(poses.redBoxCLeftDrop, Math.toRadians(-90))
+        Trajectory boxAMovements = drive.trajectoryBuilder(new Pose2d(-22, -54, Math.toRadians(90)), Math.toRadians(0))
+                .splineToSplineHeading(poses.redBoxABottomDrop, Math.toRadians(0))
                 .build();
 
-        Trajectory boxCWobbleGoalGrab = drive.trajectoryBuilder(poses.redBoxCLeftDrop, Math.toRadians(180))
-                .splineToSplineHeading(new Pose2d(-26, -60, Math.toRadians(180)), Math.toRadians(180))
+        Trajectory powerShootAMovement = drive.trajectoryBuilder(new Pose2d(-10, -54, Math.toRadians(0)), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(5, -1.5), Math.toRadians(0))
                 .build();
 
-        Trajectory depositGoal = drive.trajectoryBuilder(new Pose2d(-26, -60, Math.toRadians(180)))
-                .splineToSplineHeading(new Pose2d(5, -55, Math.toRadians(90)), 0)
-                .splineToSplineHeading(new Pose2d(50, -55, Math.toRadians(-5)), 0)
+        Trajectory boxBMovements = drive.trajectoryBuilder(new Pose2d(-22, -54, Math.toRadians(90)), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(36, -58), Math.toRadians(0))
                 .build();
 
-        Trajectory powerShotsMovement = drive.trajectoryBuilder(new Pose2d(50, -55, Math.toRadians(0)), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(10, -6.5), Math.toRadians(90))
+        Trajectory powerShotBMovement = drive.trajectoryBuilder(new Pose2d(36, -54, Math.toRadians(90)), Math.toRadians(180))
+                .splineToSplineHeading(new Pose2d(5, -2, Math.toRadians(0)), Math.toRadians(90))
                 .build();
 
-        Trajectory secondPowerBoi = drive.trajectoryBuilder(new Pose2d(10, -6.5, Math.toRadians(0)), Math.toRadians(90))
-                .strafeLeft(5.5)
+        Trajectory boxCMovements = drive.trajectoryBuilder(new Pose2d(-22, -54, Math.toRadians(90)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(40, -56, Math.toRadians(0)), Math.toRadians(0))
                 .build();
 
-        Trajectory thirdPowerLad = drive.trajectoryBuilder(new Pose2d(10, -1, Math.toRadians(0)), Math.toRadians(90))
-                .strafeLeft(5.5)
+        Trajectory powerShotCMovement = drive.trajectoryBuilder(new Pose2d(45, -56, Math.toRadians(0)), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(5, -1.5), Math.toRadians(90))
                 .build();
 
-        Trajectory park = drive.trajectoryBuilder(new Pose2d(10, 4.5, Math.toRadians(0)))
-                .forward(5)
+        Trajectory secondPowerBoi = drive.trajectoryBuilder(new Pose2d(0, -5.5, Math.toRadians(0)), Math.toRadians(0))
+                .strafeLeft(6)
+                .build();
+
+        Trajectory thirdPowerLad = drive.trajectoryBuilder(new Pose2d(0, 0.5, Math.toRadians(0)), Math.toRadians(0))
+                .strafeLeft(6)
+                .build();
+
+        Trajectory park = drive.trajectoryBuilder(new Pose2d(5, -1.5, Math.toRadians(7.5)), Math.toRadians(0))
+                .forward(7.5)
                 .build();
 
         initVuforia();
@@ -134,6 +142,7 @@ public class RedFull extends LinearOpMode {
         }
 
         ElapsedTime detectionTimer = new ElapsedTime();
+        ElapsedTime revTimer = new ElapsedTime();
 
         waitForStart();
 
@@ -142,6 +151,7 @@ public class RedFull extends LinearOpMode {
 
         if(opModeIsActive()) {
             finger.setPower(1);
+            sleep(5000);
             drive.followTrajectory(ringDetectionMovement);
             detectionTimer.reset();
             while (stackDetected == false) {
@@ -175,9 +185,40 @@ public class RedFull extends LinearOpMode {
                     }
                 }
             }
-            if(ringCount == 4) {
-                telemetry.addData("Movement: ", "Box C");
-                telemetry.update();
+
+            if(ringCount == 0) {
+                drive.followTrajectory(boxAMovements);
+                while(extendedLimit.getState() == true) {
+                    arm.setPower(0.5);
+                }
+                arm.setPower(0);
+                finger.setPower(-1);
+                sleep(500);
+                finger.setPower(0);
+                while(retractedLimit.getState() == true) {
+                    arm.setPower(-0.5);
+                }
+                arm.setPower(0);
+                shooterControl.setTargetShooterRPM(robot.POWER_SHOT_SHOOTER_RPM);
+                drive.followTrajectory(powerShootAMovement);
+            } else if(ringCount == 1) {
+                drive.followTrajectory(boxBMovements);
+                while(extendedLimit.getState() == true) {
+                    arm.setPower(0.5);
+                }
+                arm.setPower(0);
+                finger.setPower(-1);
+                sleep(500);
+                finger.setPower(0);
+                sleep(3000);
+                while(retractedLimit.getState() == true) {
+                    arm.setPower(-0.5);
+                }
+                arm.setPower(0);
+                sleep(3000);
+                shooterControl.setTargetShooterRPM(robot.POWER_SHOT_SHOOTER_RPM);
+                drive.followTrajectory(powerShotBMovement);
+            } else if(ringCount == 4) {
                 drive.followTrajectory(boxCMovements);
                 while(extendedLimit.getState() == true) {
                     arm.setPower(0.5);
@@ -186,100 +227,43 @@ public class RedFull extends LinearOpMode {
                 finger.setPower(-1);
                 sleep(500);
                 finger.setPower(0);
-                drive.followTrajectory(boxCWobbleGoalGrab);
-                finger.setPower(1);
-                sleep(1000);
                 while(retractedLimit.getState() == true) {
                     arm.setPower(-0.5);
                 }
                 arm.setPower(0);
-                drive.followTrajectory(depositGoal);
-                while(extendedLimit.getState() == true) {
-                    arm.setPower(0.5);
-                }
-                arm.setPower(0);
-                finger.setPower(-1);
-                sleep(500);
-                while(retractedLimit.getState() == true) {
-                    arm.setPower(-0.5);
-                }
-                arm.setPower(0);
+                sleep(3000);
                 shooterControl.setTargetShooterRPM(robot.POWER_SHOT_SHOOTER_RPM);
-                drive.followTrajectory(powerShotsMovement);
-            }  else if(ringCount == 1) {
-                telemetry.addData("Movement: ", "Box B");
-                telemetry.update();
-                drive.followTrajectory(boxCMovements);
-                while(extendedLimit.getState() == true) {
-                    arm.setPower(0.5);
-                }
-                arm.setPower(0);
-                finger.setPower(-1);
-                sleep(500);
-                finger.setPower(0);
-                drive.followTrajectory(boxCWobbleGoalGrab);
-                finger.setPower(1);
-                sleep(1000);
-                while(retractedLimit.getState() == true) {
-                    arm.setPower(-0.5);
-                }
-                arm.setPower(0);
-                drive.followTrajectory(depositGoal);
-                while(extendedLimit.getState() == true) {
-                    arm.setPower(0.5);
-                }
-                arm.setPower(0);
-                finger.setPower(-1);
-                sleep(500);
-                while(retractedLimit.getState() == true) {
-                    arm.setPower(-0.5);
-                }
-                arm.setPower(0);
+                drive.followTrajectory(powerShotCMovement);
+            }
+
+            revTimer.reset();
+            while(revTimer.milliseconds() < 1000) {
                 shooterControl.setTargetShooterRPM(robot.POWER_SHOT_SHOOTER_RPM);
-                drive.followTrajectory(powerShotsMovement);
-            } else if(ringCount == 0) {
-                telemetry.addData("Movement: ", "Box A");
-                telemetry.update();
-                drive.followTrajectory(boxCMovements);
-                while(extendedLimit.getState() == true) {
-                    arm.setPower(0.5);
-                }
-                arm.setPower(0);
-                finger.setPower(-1);
-                sleep(500);
-                finger.setPower(0);
-                drive.followTrajectory(boxCWobbleGoalGrab);
-                finger.setPower(1);
-                sleep(1000);
-                while(retractedLimit.getState() == true) {
-                    arm.setPower(-0.5);
-                }
-                arm.setPower(0);
-                drive.followTrajectory(depositGoal);
-                while(extendedLimit.getState() == true) {
-                    arm.setPower(0.5);
-                }
-                arm.setPower(0);
-                finger.setPower(-1);
-                sleep(500);
-                while(retractedLimit.getState() == true) {
-                    arm.setPower(-0.5);
-                }
-                arm.setPower(0);
-                shooterControl.setTargetShooterRPM(robot.POWER_SHOT_SHOOTER_RPM);
-                drive.followTrajectory(powerShotsMovement);
-            }   //end of if(...){} else if(...){} else if(...){} ring detection
+            }
 
             ringPusherClass.trigger(750);
-            drive.followTrajectory(secondPowerBoi);
+            drive.turn(Math.toRadians(3.5));
+
+            revTimer.reset();
+            while(revTimer.milliseconds() < 1000) {
+                shooterControl.setTargetShooterRPM(robot.POWER_SHOT_SHOOTER_RPM);
+            }
+
             ringPusherClass.trigger(750);
-            drive.followTrajectory(thirdPowerLad);
+            drive.turn(Math.toRadians(6));
+
+            revTimer.reset();
+            while(revTimer.milliseconds() < 1000) {
+                shooterControl.setTargetShooterRPM(robot.POWER_SHOT_SHOOTER_RPM);
+            }
+
             ringPusherClass.trigger(750);
             ringPusherClass.trigger(750);
-            drive.followTrajectory(park);
 
             shooterControl.setTargetShooterRPM(0);
             shooterControl.stopShooterThread();
+
+            drive.followTrajectory(park);
         }
 
         shooterControl.setTargetShooterRPM(0);

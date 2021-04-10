@@ -52,13 +52,13 @@ public class MorganConstants {
     public static final boolean RUN_DUAL_SHOOTER = false;
     public static final double FLYWHEEL_TICKS_PER_ROTATION = 28;
     public static final int HIGH_GOAL_SHOOTER_RPM = 6000;
-    public static final int POWER_SHOT_SHOOTER_RPM = 4750;
+    public static final int POWER_SHOT_SHOOTER_RPM = 4800;
     public static final int IDLE_SHOOTER_RPM = 3000;
-    public static double SHOOTER_KP = 0.0125;
+    public static double SHOOTER_KP = 0.00015;
     public static final boolean FLYWHEELS_REVERSED = false;
     public static final boolean FLYWHEELS_BRAKE = false;
-    public static final double RING_PUSHER_RETRACTED = 0.25;
-    public static final double RING_PUSHER_TRIGGERED = 0.75;
+    public static final double RING_PUSHER_RETRACTED = 0.3;
+    public static final double RING_PUSHER_TRIGGERED = 0.625;
 
     public static final double WOBBLE_GOAL_ARM_TICKS_PER_ROTATION = 1;
     public static final int WOBBLE_GOAL_ARM_EXTENDED_TICK = 1000;

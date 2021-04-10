@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.OpModes.Auto.Red;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -27,6 +28,7 @@ import org.firstinspires.ftc.teamcode.Libs.ArmClass;
 import java.io.File;
 import java.util.List;
 
+@Disabled
 @Autonomous (name = "Red Remote Match Auto", group = "Red")
 public class RedRemoteAuto extends LinearOpMode {
     MorganConstants robot;

@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.OpModes.TeleOp.Drive;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -11,30 +9,19 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.ReadWriteFile;
 
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.Hardware.MorganConstants;
 import org.firstinspires.ftc.teamcode.Hardware.PoseSettings;
+import org.firstinspires.ftc.teamcode.Libs.ArmClass;
 import org.firstinspires.ftc.teamcode.Libs.MechanumDriveClass;
-import org.firstinspires.ftc.teamcode.Libs.MovementClass;
 import org.firstinspires.ftc.teamcode.Libs.RingPusherClass;
-import org.firstinspires.ftc.teamcode.Libs.ShooterClass;
 import org.firstinspires.ftc.teamcode.Libs.ShooterControlThread;
 import org.firstinspires.ftc.teamcode.Libs.ToggleClass;
 import org.firstinspires.ftc.teamcode.Libs.TwoPartIntakeClass;
-import org.firstinspires.ftc.teamcode.Libs.ArmClass;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.drive.StandardTrackingWheelLocalizer;
 
-import java.io.File;
-
-@TeleOp (name = "Robot Drive 2.0", group = "Drive")
-public class RobotDrive extends LinearOpMode {
-
+@TeleOp (name = "Little Drive", group = "Drive")
+public class LittleDrive extends LinearOpMode {
     SampleMecanumDrive localization;
     MorganConstants robot;
     PoseSettings poses;
@@ -54,7 +41,6 @@ public class RobotDrive extends LinearOpMode {
     BNO055IMU imu;
 
     MechanumDriveClass drive;
-    StandardTrackingWheelLocalizer localizer;
     TwoPartIntakeClass intake;
     ShooterControlThread shooterControl;
     Thread shooterThread;
@@ -65,6 +51,7 @@ public class RobotDrive extends LinearOpMode {
     private int currentShooterRPM = 0;
     private int currentRPMSetting = 0;
     private boolean currentShooterSetting = false; //is high goal RPM
+    private int motorReverse = -1;
 
     @Override
     public void runOpMode() {
@@ -121,7 +108,6 @@ public class RobotDrive extends LinearOpMode {
         imu = hardwareMap.get(BNO055IMU.class, robot.IMU);
 
         drive = new MechanumDriveClass(leftFront, rightFront, leftBack, rightBack, imu);
-        localizer = new StandardTrackingWheelLocalizer(hardwareMap);
         intake =  new TwoPartIntakeClass(mainIntake, hopperIntake);
         shooterControl = new ShooterControlThread(flywheel);
         shooterThread = new Thread(shooterControl);
@@ -132,12 +118,6 @@ public class RobotDrive extends LinearOpMode {
         telemetry.addData("Status: ", "Ready");
         telemetry.update();
 
-        try {
-            localizer.setPoseEstimate(poses.autoEndPosition);
-        } catch (NullPointerException e) {
-            localizer.setPoseEstimate(new Pose2d(0,0,0));
-        }
-
         waitForStart();
 
         shooterThread.start();
@@ -145,18 +125,47 @@ public class RobotDrive extends LinearOpMode {
 
         if(opModeIsActive()) {
             while(opModeIsActive()) {
-                drive.mechanumDriveControl(gamepad1);
-                intake.intakeDriveControl(gamepad2);
-                if(gamepad1.left_trigger != 0) {
+                leftFront.setPower(((gamepad1.left_stick_y * motorReverse) + (gamepad1.right_stick_x) + (gamepad1.left_stick_x)) * 0.25);
+                rightFront.setPower(((gamepad1.left_stick_y * motorReverse) - (gamepad1.right_stick_x) - (gamepad1.left_stick_x)) * 0.25);
+                leftBack.setPower(((gamepad1.left_stick_y * motorReverse) + (gamepad1.right_stick_x) - (gamepad1.left_stick_x)) * 0.25);
+                rightBack.setPower(((gamepad1.left_stick_y * motorReverse) - (gamepad1.right_stick_x) + (gamepad1.left_stick_x)) * 0.25);
+
+                if(gamepad2.dpad_down) {
+                    mainIntake.setPower(robot.MAIN_INTAKE_POWER);
+                    hopperIntake.setPower(robot.HOPPER_INTAKE_POWER);
+                } else if(gamepad2.dpad_up) {
+                    mainIntake.setPower(-(robot.MAIN_INTAKE_POWER));
+                    hopperIntake.setPower(-(robot.HOPPER_INTAKE_POWER));
+                } else {
+                    mainIntake.setPower(0);
+                    hopperIntake.setPower(0);
+                }
+
+                if(gamepad2.left_trigger != 0) {
                     currentShooterRPM = currentRPMSetting;
                 } else {
                     currentShooterRPM = robot.IDLE_SHOOTER_RPM;
                 }
                 shooterControl.setTargetShooterRPM(currentShooterRPM);
-                ringPusherClass.ringPusherControl(gamepad1);
-                wobbleGoal.armDriveControl(gamepad2, 0, true);
+                ringPusherClass.ringPusherControl(gamepad2);
 
-                currentShooterSetting = shooterRPMToggle.buttonReleaseToggle(gamepad1.dpad_left, false);
+                if(gamepad2.right_bumper && extendedLimit.getState()) {
+                    arm.setPower(0.5);
+                } else if(gamepad2.left_bumper && retractedLimit.getState()) {
+                    arm.setPower(-0.5);
+                } else {
+                    arm.setPower(0);
+                }
+
+                if(gamepad2.x) {
+                    finger.setPower(-1);
+                } else if(gamepad2.a) {
+                    finger.setPower(1);
+                } else {
+                    finger.setPower(0);
+                }
+
+                currentShooterSetting = shooterRPMToggle.buttonReleaseToggle(gamepad2.dpad_left, false);
 
                 if(currentShooterSetting == false) {
                     telemetry.addData("Current Shooter RPM: ", "High Goal");
@@ -165,14 +174,6 @@ public class RobotDrive extends LinearOpMode {
                     telemetry.addData("Current Shooter RPM: ", "Power Shot");
                     currentRPMSetting = robot.POWER_SHOT_SHOOTER_RPM;
                 }
-
-                localizer.update();
-
-                Pose2d currentPose = localizer.getPoseEstimate();
-
-                telemetry.addData("X", currentPose.getX());
-                telemetry.addData("Y", currentPose.getY());
-                telemetry.addData("Heading", currentPose.getHeading());
 
                 telemetry.update();
             }

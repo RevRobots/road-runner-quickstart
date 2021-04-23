@@ -17,6 +17,10 @@ public class MorganConstants {
     public static final String LEFT_BACK = "leftBack";
     public static final String RIGHT_BACK = "rightBack";
 
+    public static final String LEFT_ODOMETRY_WHEEL = "leftFront";
+    public static final String RIGHT_ODOMETRY_WHEEL = "rightFront";
+    public static final String MIDDLE_ODOMETRY_WHEEL = "rightBack";
+
     public static final String MAIN_INTAKE = "intake";
     public static final String HOPPER_INTAKE = "hopperIntake";
 
@@ -41,6 +45,9 @@ public class MorganConstants {
     public static final boolean LEFT_BACK_REVERSED = true;
     public static final boolean RIGHT_BACK_REVERSED = false;
     public static final boolean DRIVE_TRAIN_BRAKES = true;
+    public static final double ODOMETRY_TICKS_PER_ROTATION = 1;
+    public static final double VERTICAL_WHEEL_DISTANCE = 1; //inches
+    public static final double HORIZONTAL_WHEEL_OFFSET = 1; //inches
 
     public static final double INTAKE_TICKS_PER_ROTATION = 537.6;
     public static final double MAIN_INTAKE_POWER = 0.75;

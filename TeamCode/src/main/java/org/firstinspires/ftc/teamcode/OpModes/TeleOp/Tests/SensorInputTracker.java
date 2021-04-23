@@ -154,7 +154,6 @@ public class SensorInputTracker extends LinearOpMode {
 
                 telemetry.addData("Shooter ", "Encoders");
                 telemetry.addData("Flywheel Value: ", frontFlywheel.getCurrentPosition());
-                telemetry.addData("Ring Pusher Value: ", ringPusher.getPosition());
 
                 telemetry.addData("Wobble Goal Arm ", "Encoders");
                 telemetry.addData("Wobble Goal Arm Value: ", wobbleGoalArm.getCurrentPosition());

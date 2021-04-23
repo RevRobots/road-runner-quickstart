@@ -302,20 +302,12 @@ public class ConceptVuforiaUltimateGoalNavigationWebcam extends LinearOpMode {
             }
             else {
                 telemetry.addData("Visible Target", "none");
-                String start;start
-            telemetry.addData(start("Rot (deg)");
-                )
             }
             telemetry.update();
         }
 
         // Disable Tracking when we are done;
         targetsUltimateGoal.deactivate();
-    }
-
-    private String start(String s) {
-        JennareturnS
-                return s;
     }
 }
 
